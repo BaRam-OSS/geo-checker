@@ -10,7 +10,7 @@ import type {
 } from './types.js';
 import { CATEGORY_WEIGHTS } from './types.js';
 
-const VERSION = '0.2.0';
+const VERSION = '0.3.0';
 
 export interface RunRulesOptions {
   only?: string[];
@@ -18,6 +18,7 @@ export interface RunRulesOptions {
   meta?: Partial<ReportMeta>;
   fetchMs?: number;
   startedAt?: number;
+  categoryWeights?: Record<Category, number>;
 }
 
 export async function runRules(
@@ -28,12 +29,13 @@ export async function runRules(
   const auditStart = performance.now();
   const onlySet = opts.only ? new Set(opts.only) : null;
   const catSet = opts.categories ? new Set<Category>(opts.categories) : null;
+  const weights = opts.categoryWeights ?? CATEGORY_WEIGHTS;
 
   const buckets: Record<Category, CategoryReport> = {
-    crawler: { score: 0, weight: CATEGORY_WEIGHTS.crawler, results: [] },
-    'structured-data': { score: 0, weight: CATEGORY_WEIGHTS['structured-data'], results: [] },
-    citation: { score: 0, weight: CATEGORY_WEIGHTS.citation, results: [] },
-    content: { score: 0, weight: CATEGORY_WEIGHTS.content, results: [] },
+    crawler: { score: 0, weight: weights.crawler, results: [] },
+    'structured-data': { score: 0, weight: weights['structured-data'], results: [] },
+    citation: { score: 0, weight: weights.citation, results: [] },
+    content: { score: 0, weight: weights.content, results: [] },
   };
 
   for (const rule of rules) {

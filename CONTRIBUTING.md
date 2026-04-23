@@ -71,6 +71,30 @@ export const myRule = defineRule({
 - **Weight thoughtfully.** 1–10. Rules with bigger real-world impact get higher weights.
 - **Impact vs weight.** `weight` affects scoring; `impact` is for UX/prioritization in reports. Keep them consistent — a `critical` impact rule should not have weight 1.
 
+## Config file
+
+Users can customise audits with a `geo-checker.config.{json,mjs,js}` file in the project root. The loader also accepts `--config <path>`:
+
+```json
+{
+  "rules": {
+    "cnt.word-count": { "enabled": false },
+    "crawler.robots-ai-allow": { "weight": 10 }
+  },
+  "categories": {
+    "structured-data": { "weight": 40 }
+  },
+  "extraRules": []
+}
+```
+
+- Rule keys are the **stableId** (preferred) or `id`.
+- `weight` overrides are applied before scoring — useful when you care more about one signal than the default mix.
+- `categories[*].weight` lets you rebalance the overall score against `CATEGORY_WEIGHTS`.
+- `extraRules` takes `Rule` instances — only meaningful from a `.mjs`/`.js` config where you can `import { defineRule } from 'geo-checker'`.
+
+When writing tests for config behaviour, use `applyConfig()` directly (see `test/config.test.ts`) — it returns the resolved rule list and category weights without touching the filesystem.
+
 ## Stable IDs
 
 `stableId` is a **contract**. Once a rule ships, its `stableId` must never change — CI budgets, external dashboards, and downstream tooling pin rules by it. If you need to rename a rule:

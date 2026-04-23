@@ -3,6 +3,7 @@ import { robotsReachableRule } from './robots-reachable.js';
 import { robotsAiAllowRule } from './robots-ai-allow.js';
 import { llmsTxtPresentRule } from './llms-txt-present.js';
 import { llmsTxtWellformedRule } from './llms-txt-wellformed.js';
+import { llmsFullTxtRule } from './llms-full-txt.js';
 import { sitemapPresentRule } from './sitemap-present.js';
 
 export const crawlerRules = [
@@ -11,5 +12,6 @@ export const crawlerRules = [
   robotsAiAllowRule,
   llmsTxtPresentRule,
   llmsTxtWellformedRule,
+  llmsFullTxtRule,
   sitemapPresentRule,
 ];

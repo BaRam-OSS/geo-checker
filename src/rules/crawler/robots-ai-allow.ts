@@ -2,13 +2,35 @@ import { defineRule } from '../../types.js';
 import { isPathAllowed, matchGroup } from '../../fetcher/robots.js';
 
 const AI_BOTS = [
+  // Tier 1: OpenAI
   'GPTBot',
+  'OAI-SearchBot',
+  'ChatGPT-User',
+  // Tier 1: Google / Gemini
   'Google-Extended',
+  'Google-CloudVertexBot',
+  // Tier 1: Anthropic
   'ClaudeBot',
-  'PerplexityBot',
-  'CCBot',
-  'Amazonbot',
   'anthropic-ai',
+  'Claude-Web',
+  // Tier 1: Perplexity
+  'PerplexityBot',
+  // Tier 1: Apple
+  'Applebot-Extended',
+  // Tier 1: Meta
+  'Meta-ExternalAgent',
+  // Tier 1: ByteDance
+  'Bytespider',
+  // Tier 1: DuckDuckGo
+  'DuckAssistBot',
+  // Tier 1: You.com
+  'YouBot',
+  // Tier 1: Cohere
+  'cohere-ai',
+  // Tier 2: Common Crawl (feeds many LLM training sets)
+  'CCBot',
+  // Tier 2: Amazon
+  'Amazonbot',
 ];
 
 export const robotsAiAllowRule = defineRule({
@@ -21,7 +43,8 @@ export const robotsAiAllowRule = defineRule({
   effort: 'low',
   docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#crawlerrobots-ai-allow',
   title: 'AI crawlers are allowed',
-  description: 'Major AI search crawlers (GPTBot, Google-Extended, ClaudeBot, PerplexityBot, CCBot, Amazonbot) must be allowed to index the homepage.',
+  description:
+    'Major AI search and training crawlers (17 bots incl. GPTBot, OAI-SearchBot, Google-Extended, ClaudeBot, PerplexityBot, Applebot-Extended, Meta-ExternalAgent, Bytespider, DuckAssistBot, YouBot) must be allowed to index the homepage.',
   run(ctx) {
     if (!ctx.robots) {
       return {
@@ -46,9 +69,9 @@ export const robotsAiAllowRule = defineRule({
     if (blocked.length > 0) {
       return {
         status: 'fail',
-        score: 0,
+        score: Math.max(0, 1 - blocked.length / AI_BOTS.length),
         rationale: `Blocked: ${blocked.join(', ')}. Remove the Disallow or add an explicit Allow for these user-agents.`,
-        evidence: { blocked, mentioned },
+        evidence: { blocked, mentioned, totalBots: AI_BOTS.length },
         fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
       };
     }
@@ -56,14 +79,16 @@ export const robotsAiAllowRule = defineRule({
       return {
         status: 'warn',
         score: 0.6,
-        rationale: 'No AI crawler is explicitly mentioned. Consider adding explicit Allow rules to remove ambiguity.',
+        rationale: `All ${AI_BOTS.length} AI crawlers reach the page via default rules, but none are explicitly listed. Consider explicit Allow entries.`,
       };
     }
     return {
       status: 'pass',
       score: 1,
-      rationale: `All AI crawlers can reach the page; ${mentioned.length} explicitly listed.`,
-      evidence: { mentioned },
+      rationale: `All ${AI_BOTS.length} AI crawlers can reach the page; ${mentioned.length} explicitly listed.`,
+      evidence: { mentioned, totalBots: AI_BOTS.length },
     };
   },
 });
+
+export const AI_BOTS_TRACKED = AI_BOTS;

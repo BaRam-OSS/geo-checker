@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] — 2026-04-23
+
+v0.3 is the **"GEO Intelligence"** milestone: deeper coverage of the signals AI engines actually rank on, plus the workflow integrations needed to plug geo-checker into CI. Backwards-compatible — `schemaVersion` stays at `1`, every existing stableId is unchanged, all new fields are optional.
+
+### Added
+
+- **6 new rules** (registry grows from 25 → 31):
+  - `crawler.llms-full-txt` — checks for `/llms-full.txt`, the full-content mirror that lets AI assistants ingest the corpus in one request.
+  - `sd.sameas-entity` — Organization/Person nodes should declare `sameAs[]` linking to Wikipedia/Wikidata/LinkedIn (E-E-A-T entity-graph signal).
+  - `sd.breadcrumb-valid` — when a `BreadcrumbList` is present, every `itemListElement` must declare `position`, `name`, and `item`.
+  - `cit.content-freshness` — `dateModified` within 1 year on Article-like JSON-LD; warns on stale (>2y) content.
+  - `cnt.qa-structure` — question-style H2/H3 headings (or `FAQPage` JSON-LD) for answer extraction. Recognises English and Korean question patterns.
+  - `cnt.external-citations` — outbound links to authoritative external sources (E-E-A-T trust signal). Excludes `nofollow`/`sponsored`.
+- **Expanded AI bot registry** — `crawler.robots-ai-allow` now tracks **17 crawlers** (up from 7): GPTBot, OAI-SearchBot, ChatGPT-User, Google-Extended, Google-CloudVertexBot, ClaudeBot, anthropic-ai, Claude-Web, PerplexityBot, Applebot-Extended, Meta-ExternalAgent, Bytespider, DuckAssistBot, YouBot, cohere-ai, CCBot, Amazonbot. stableId unchanged.
+- **CSV reporter** (`--csv <path>`) — flat tabular export, one row per rule result, ready for BI dashboards.
+- **Markdown reporter** (`--md <path>`) — PR-comment template with shields.io score badges and an issue table. Pipe straight into `gh pr comment --body-file`.
+- **SARIF 2.1.0 reporter** (`--sarif <path>`) — for GitHub Code Scanning ingestion.
+- **Baseline diff** (`--baseline <prev.json>`) — prints per-category deltas, regressions, fixes, and new failures alongside the regular report.
+- **Config file** — auto-discovers `geo-checker.config.{json,mjs,js}` (or pass `--config <path>`). Supports rule disable/enable, per-rule weight overrides, category weight overrides, and `extraRules`.
+- **Batch mode** — new `geo-checker batch <file>` sub-command. Reads URLs (one per line, `#` comments OK), audits with configurable `--concurrency`, writes per-URL `<slug>.json`/`<slug>.html`, plus an aggregated `summary.json`. Per-URL failures are isolated.
+- **JSON Schema** — published at `schema/audit-report.schema.json` (also bundled in the npm package).
+- **AuditContext.llmsFullTxt** — new field exposing `/llms-full.txt` raw contents to rules and consumers.
+
+### Changed
+
+- Package version bumped to `0.3.0`.
+- `audit()` now accepts `config: GeoConfig` and `configPath: string` — both optional and additive.
+- `runRules()` now accepts `categoryWeights` for config-driven category-weight overrides.
+
+### Internal
+
+- New tests: 6 per-rule suites, 4 new reporter suites, batch runner, and config loader. Suite grew from 57 → 100+.
+- New module exports: `runBatch`, `summaryToJson`, `urlToSlug`, `toCsv`, `toMarkdown`, `toSarif`, `diffReports`, `formatDiffLine`, `loadConfig`, `findConfig`, `applyConfig`, plus `GeoConfig` / `RuleOverride` / batch / diff types.
+
 ## [0.2.0] — 2026-04-23
 
 v0.2 is the **"Lighthouse-grade reporting"** milestone. Every addition is backwards-compatible with v0.1: existing CLI flags, JSON output, and programmatic `audit()` calls still work unchanged. New fields are additive.

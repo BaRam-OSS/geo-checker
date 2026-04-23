@@ -22,7 +22,7 @@
 
 ## Why
 
-SEO tools tell you whether **Google** can rank your page. `geo-checker` tells you whether **AI search engines** can cite it. It inspects 25 on-page signals across four weighted categories and returns a 0–100 score per category — plus an interactive HTML report, prioritized Opportunities, and concrete fixes.
+SEO tools tell you whether **Google** can rank your page. `geo-checker` tells you whether **AI search engines** can cite it. It inspects **31 on-page signals** across four weighted categories and returns a 0–100 score per category — plus an interactive HTML report, prioritized Opportunities, and concrete fixes.
 
 Inspired by Google Lighthouse, but built for GEO: AI-crawler robots rules, `llms.txt`, schema.org graph quality, citation signals.
 
@@ -71,13 +71,45 @@ geo-checker https://example.com --fail-on warn
 | `--json` | Emit JSON to stdout. |
 | `--html <path>` | Write a self-contained HTML report to `<path>`. Use `-` for stdout. |
 | `--out <dir>` | Write `report.json` + `report.html` to `<dir>` (directory is created if missing). |
+| `--csv <path>` | Flat CSV export (one row per rule result) — feed into BI dashboards. |
+| `--md <path>` | Markdown PR-comment summary with score badges and an issue table. |
+| `--sarif <path>` | SARIF 2.1.0 report for **GitHub Code Scanning** integration. |
+| `--baseline <prev.json>` | Compare against a prior JSON report and print per-category deltas + regressions/fixes. |
+| `--config <path>` | Load a config file (defaults to `geo-checker.config.{json,mjs,js}` in cwd). |
 | `--render` | Use headless Chromium via Playwright (optional dep). |
 | `--category <names>` | Comma-separated: `crawler`, `structured-data`, `citation`, `content`. |
 | `--only <ids>` | Comma-separated rule IDs (or stableIds) to run. |
 | `--fail-on <level>` | `fail` (default) or `warn`. |
 | `--timeout <ms>` | Per-request timeout (default 20 000). |
 
+**Batch mode:**
+
+```sh
+# Audit every URL in urls.txt (one per line, # comments allowed) with 4 workers
+geo-checker batch urls.txt --out ./reports --concurrency 4
+```
+
+Writes per-URL `<slug>.json` + `<slug>.html` and an aggregated `summary.json`. Per-URL failures are isolated — one timeout doesn't abort the batch.
+
 **Exit codes:** `0` success · `1` policy failure · `2` runtime error.
+
+## Config file
+
+Drop a `geo-checker.config.json` in your project root (or pass `--config <path>`) to disable rules, adjust weights, or inject custom rules:
+
+```json
+{
+  "rules": {
+    "cnt.word-count": { "enabled": false },
+    "crawler.robots-ai-allow": { "weight": 10 }
+  },
+  "categories": {
+    "structured-data": { "weight": 40 }
+  }
+}
+```
+
+`.mjs` and `.js` are also supported (must `export default` the config object). See [`docs/rules.md`](./docs/rules.md) for every rule `stableId`.
 
 ## The HTML report
 
@@ -120,10 +152,10 @@ await fs.writeFile('report.json', toJson(report));
 
 | Category | Signals | Rules | Weight |
 |---|---|---:|---:|
-| **AI Crawler Access** | HTTPS, robots.txt reachability, AI-bot allow-lists (GPTBot, Google-Extended, ClaudeBot, PerplexityBot, CCBot, Amazonbot, anthropic-ai), `llms.txt`, sitemap.xml | 6 | 25 |
-| **Structured Data** | JSON-LD presence & validity, recognised schema.org types, required-field coverage (Article, FAQPage, HowTo, Product, Organization, …), microdata/RDFa fallback, no duplicate primary types | 6 | 30 |
-| **Citation Signals** | `<title>`, meta description, canonical, Open Graph, Twitter Card, `<html lang>`, author, publish/modified dates | 8 | 25 |
-| **Content Structure** | single `<h1>`, heading hierarchy, image alt coverage, TL;DR / FAQ blocks, word count | 5 | 20 |
+| **AI Crawler Access** | HTTPS, robots.txt reachability, **17 AI-bot allow-list** (GPTBot, OAI-SearchBot, ChatGPT-User, Google-Extended, Google-CloudVertexBot, ClaudeBot, anthropic-ai, Claude-Web, PerplexityBot, Applebot-Extended, Meta-ExternalAgent, Bytespider, DuckAssistBot, YouBot, cohere-ai, CCBot, Amazonbot), `llms.txt`, `llms-full.txt`, sitemap.xml | 7 | 25 |
+| **Structured Data** | JSON-LD presence & validity, recognised schema.org types, required-field coverage, microdata/RDFa fallback, no duplicate primary types, `sameAs` knowledge-graph linkage, BreadcrumbList item validity | 8 | 30 |
+| **Citation Signals** | `<title>`, meta description, canonical, Open Graph, Twitter Card, `<html lang>`, author, publish/modified dates, content freshness (dateModified ≤ 1y) | 9 | 25 |
+| **Content Structure** | single `<h1>`, heading hierarchy, image alt coverage, TL;DR / FAQ blocks, word count, Q&A structure for answer extraction, external citations (E-E-A-T) | 7 | 20 |
 
 Every rule declares:
 
@@ -192,15 +224,38 @@ on: [push, pull_request]
 jobs:
   geo:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write  # for SARIF upload
+      pull-requests: write    # for PR comment
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-      - run: npx -y geo-checker https://staging.example.com --fail-on warn --out ./geo
+      - run: |
+          npx -y geo-checker https://staging.example.com \
+            --fail-on warn \
+            --out ./geo \
+            --sarif ./geo/results.sarif \
+            --md ./geo/summary.md
       - uses: actions/upload-artifact@v4
         with:
           name: geo-report
           path: ./geo
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ./geo/results.sarif
+      - if: github.event_name == 'pull_request'
+        run: gh pr comment ${{ github.event.pull_request.number }} --body-file ./geo/summary.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+**Track regressions** by saving last-known-good `report.json` and passing it as `--baseline`:
+
+```sh
+geo-checker https://staging.example.com --baseline ./baselines/main.json --out ./geo
 ```
 
 ## License

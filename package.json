@@ -1,6 +1,6 @@
 {
   "name": "geo-checker",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Lighthouse-style auditor for Generative Engine Optimization (GEO). Checks llms.txt, schema.org, AI-crawler robots rules, and citation signals that help your site get cited by ChatGPT, Claude, Gemini, and Perplexity.",
   "keywords": [
     "geo",
@@ -47,6 +47,7 @@
   },
   "files": [
     "dist",
+    "schema",
     "README.md",
     "README.ko.md",
     "LICENSE"

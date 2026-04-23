@@ -68,9 +68,10 @@ export async function buildContext(url: string, opts: BuildContextOptions = {}):
     );
   }
 
-  const [robotsRaw, llmsRaw] = await Promise.all([
+  const [robotsRaw, llmsRaw, llmsFullRaw] = await Promise.all([
     fetchText(`${origin}/robots.txt`, opts),
     fetchText(`${origin}/llms.txt`, opts),
+    fetchText(`${origin}/llms-full.txt`, opts),
   ]);
 
   let sitemapUrl: string | null = null;
@@ -90,6 +91,7 @@ export async function buildContext(url: string, opts: BuildContextOptions = {}):
     status,
     robots,
     llmsTxt: llmsRaw ? parseLlmsTxt(llmsRaw) : null,
+    llmsFullTxt: llmsFullRaw && llmsFullRaw.trim().length > 0 ? llmsFullRaw : null,
     sitemap,
     jsonLd: extractJsonLd($),
     renderMode,

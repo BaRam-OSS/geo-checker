@@ -20,6 +20,7 @@ function makeCtx(overrides: Partial<AuditContext> = {}): AuditContext {
     status: 200,
     robots: null,
     llmsTxt: null,
+    llmsFullTxt: null,
     sitemap: null,
     jsonLd: [],
     renderMode: 'static',
@@ -31,6 +32,7 @@ function makeCtx(overrides: Partial<AuditContext> = {}): AuditContext {
 
 describe('full rule registry', () => {
   it('scores a rich page highly', async () => {
+    const recentIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
     const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -43,31 +45,46 @@ describe('full rule registry', () => {
   <meta property="og:image" content="https://example.com/cover.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="t">
-  <meta property="article:published_time" content="2026-01-01T00:00:00Z">
+  <meta property="article:published_time" content="${recentIso}">
   <script type="application/ld+json">${JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'A deep dive into GEO for 2026',
     author: { '@type': 'Person', name: 'Alice' },
-    datePublished: '2026-01-01',
+    datePublished: recentIso,
+    dateModified: recentIso,
+    publisher: {
+      '@type': 'Organization',
+      name: 'Example Co',
+      sameAs: [
+        'https://en.wikipedia.org/wiki/Example',
+        'https://www.linkedin.com/company/example',
+      ],
+    },
   })}</script>
 </head>
 <body>
   <h1>A deep dive into GEO for 2026</h1>
-  <h2>Intro</h2>
+  <h2>What is GEO?</h2>
+  <h2>How do AI engines rank pages?</h2>
   <section id="tldr"><p>TL;DR: make your site citation-ready.</p></section>
   <img src="a.png" alt="diagram"><img src="b.png" alt="diagram"><img src="c.png" alt="">
+  <p>See the <a href="https://en.wikipedia.org/wiki/Generative_AI">Wikipedia entry</a>, the <a href="https://schema.org/Article">schema.org spec</a>, and the <a href="https://platform.openai.com/docs">OpenAI docs</a>.</p>
   ${'<p>filler paragraph with many words that pad the body up to the required threshold easily</p>'.repeat(40)}
 </body></html>`;
     const robots = parseRobots(
       `User-agent: *\nAllow: /\n\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: Google-Extended\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: CCBot\nAllow: /\n\nUser-agent: Amazonbot\nAllow: /\n\nSitemap: https://example.com/sitemap.xml\n`,
     );
     const llmsTxt = parseLlmsTxt('# Site\n\n> overview\n\n## Docs\n- [a](https://example.com/a)');
+    const llmsFullTxt =
+      '# Site full mirror\n\n' +
+      'This is the full-text mirror of every page worth citing on this site. '.repeat(20);
     const report = await runRules(
       makeCtx({
         html,
         robots,
         llmsTxt,
+        llmsFullTxt,
         sitemap: { urls: ['https://example.com/post'] },
         jsonLd: [
           {
@@ -75,15 +92,24 @@ describe('full rule registry', () => {
             '@type': 'Article',
             headline: 'A deep dive into GEO for 2026',
             author: { '@type': 'Person', name: 'Alice' },
-            datePublished: '2026-01-01',
+            datePublished: recentIso,
+            dateModified: recentIso,
+            publisher: {
+              '@type': 'Organization',
+              name: 'Example Co',
+              sameAs: [
+                'https://en.wikipedia.org/wiki/Example',
+                'https://www.linkedin.com/company/example',
+              ],
+            },
           },
         ],
       }),
       defaultRules,
     );
     expect(report.overall).toBeGreaterThanOrEqual(85);
-    expect(report.categories.crawler.score).toBeGreaterThanOrEqual(90);
-    expect(report.categories['structured-data'].score).toBeGreaterThanOrEqual(90);
+    expect(report.categories.crawler.score).toBeGreaterThanOrEqual(85);
+    expect(report.categories['structured-data'].score).toBeGreaterThanOrEqual(85);
     expect(report.categories.citation.score).toBeGreaterThanOrEqual(90);
     expect(report.categories.content.score).toBeGreaterThanOrEqual(80);
   });

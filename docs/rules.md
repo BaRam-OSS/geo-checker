@@ -42,8 +42,8 @@ Warns if `/robots.txt` returns a non-2xx status. A reachable file — even an em
 ### crawler.robots-ai-allow
 **weight 5 · impact critical · effort low · diagnostic**
 
-Fails when any of GPTBot, Google-Extended, ClaudeBot, PerplexityBot, CCBot, Amazonbot, or anthropic-ai is disallowed from the audited path. Warns when none of them are mentioned.
-**Fix:** add explicit `User-agent: GPTBot` / `Allow: /` blocks (repeat for each bot) instead of relying on the wildcard.
+Fails when any of **17 tracked AI crawlers** is disallowed from the audited path. Warns when none are explicitly mentioned. Tracked bots: GPTBot, OAI-SearchBot, ChatGPT-User, Google-Extended, Google-CloudVertexBot, ClaudeBot, anthropic-ai, Claude-Web, PerplexityBot, Applebot-Extended, Meta-ExternalAgent, Bytespider, DuckAssistBot, YouBot, cohere-ai, CCBot, Amazonbot.
+**Fix:** add explicit `User-agent: <bot>` / `Allow: /` blocks (repeat for each bot you care about) instead of relying on the wildcard.
 
 ### crawler.llms-txt-present
 **weight 4 · impact medium · effort medium · opportunity**
@@ -62,6 +62,12 @@ Validates the structure: needs an H1 project title, an optional summary paragrap
 
 Warns if neither `/sitemap.xml` nor a `Sitemap:` directive in robots.txt points to a discoverable sitemap.
 **Fix:** generate a sitemap during build; most frameworks ship this out of the box.
+
+### crawler.llms-full-txt
+**weight 2 · impact medium · effort medium · opportunity**
+
+Warns if `/llms-full.txt` is missing or very short. The full-content mirror lets AI assistants ingest your top pages in one request instead of crawling each URL individually.
+**Fix:** publish `/llms-full.txt` alongside `/llms.txt` containing the full body text of the pages worth citing. Build it at deploy-time from your CMS.
 
 ---
 
@@ -113,6 +119,18 @@ Only checked when no JSON-LD exists. Fails when there is also no `itemscope item
 
 Warns when the page declares more than one `Article`, `NewsArticle`, `BlogPosting`, `Product`, or `Organization` node — AI engines get confused about which is "the" entity.
 **Fix:** consolidate into a single primary node, or connect them via `@id` + `isPartOf`.
+
+### sd.sameas-entity
+**weight 3 · impact high · effort medium · opportunity**
+
+Looks at every `Organization`, `Person`, `LocalBusiness`, `Brand`, or `Corporation` node and checks for a `sameAs[]` array pointing at trusted knowledge-graph hosts (Wikipedia, Wikidata, LinkedIn, GitHub, Crunchbase, etc.). Two or more trusted links = full credit; one = partial; absent = warn.
+**Fix:** add `"sameAs": ["https://en.wikipedia.org/wiki/...", "https://www.linkedin.com/company/..."]` to your Organization JSON-LD. AI engines use these links to resolve and trust the entity.
+
+### sd.breadcrumb-valid
+**weight 2 · impact medium · effort medium · opportunity**
+
+Skipped unless a `BreadcrumbList` is present. Then validates that every `itemListElement` has `position` (1-indexed), `name`, and `item` (URL).
+**Fix:** every breadcrumb item should look like `{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://example.com/" }`.
 
 ---
 
@@ -166,6 +184,12 @@ Checks (in order) JSON-LD `author`, `meta[name=author]`, `rel="author"`, `.autho
 Requires a publish or modified date via JSON-LD `datePublished`, `meta[property="article:published_time"]`, or `<time datetime="...">`. AI engines heavily prefer recent content.
 **Fix:** include `datePublished` and update `dateModified` whenever you meaningfully revise.
 
+### cit.content-freshness
+**weight 3 · impact high · effort low · opportunity**
+
+Skipped unless an Article-like JSON-LD is present (`Article`, `NewsArticle`, `BlogPosting`, `Report`, `TechArticle`). Passes when `dateModified` (or `datePublished` as fallback) is within 365 days; warns between 1–2 years; harder warn beyond 2 years.
+**Fix:** when you revise an article, also bump `dateModified` to today's ISO date. Stale content is down-ranked in AI retrieval.
+
 ---
 
 ## content  <span style="color:#9aa6b2">(category weight 20)</span>
@@ -200,6 +224,18 @@ Passes when a `FAQPage` JSON-LD exists or a `section[id*=tldr|summary|faq]` / `.
 Fails under 100 words of body text (script/style/nav/footer stripped). Warns under 300.
 **Fix:** flesh out thin pages; AI engines rarely cite sub-100-word content.
 
+### cnt.qa-structure
+**weight 3 · impact high · effort medium · opportunity**
+
+Passes when `FAQPage` JSON-LD is present, or when ≥2 H2/H3 headings are question-style. Recognises question marks (`?`/`？`), English interrogatives (`how`, `what`, `why`, `when`, `where`, `who`, `is`, `are`, `can`, `should`, `do`, `does`), and Korean interrogatives (`어떻게`, `왜`, `무엇`, `언제`, `어디`, `누가`, `어느`, `얼마`).
+**Fix:** reframe 2+ H2 headings as real questions — e.g. "How do I audit a page?" — or add `FAQPage` JSON-LD. This materially improves answer-extraction odds.
+
+### cnt.external-citations
+**weight 2 · impact medium · effort medium · opportunity**
+
+Counts distinct external hosts linked from `main/article/body` anchors, excluding `rel="nofollow"` / `rel="sponsored"` and subdomain self-references. ≥3 hosts = pass; 1–2 hosts = partial pass; 0 = warn.
+**Fix:** cite at least one authoritative external source per article — a research paper, official docs, or news outlet — as an E-E-A-T signal.
+
 ---
 
 ## Summary table
@@ -212,12 +248,15 @@ Fails under 100 words of body text (script/style/nav/footer stripped). Warns und
 | crawler.llms-txt-present | crawler | 4 | medium | medium | opportunity |
 | crawler.llms-txt-wellformed | crawler | 3 | medium | low | opportunity |
 | crawler.sitemap-present | crawler | 4 | high | low | diagnostic |
+| crawler.llms-full-txt | crawler | 2 | medium | medium | opportunity |
 | sd.jsonld-present | structured-data | 5 | critical | medium | diagnostic |
 | sd.jsonld-valid-json | structured-data | 3 | high | low | diagnostic |
 | sd.schema-type-recognized | structured-data | 4 | high | low | diagnostic |
 | sd.required-fields | structured-data | 6 | high | medium | opportunity |
 | sd.microdata-fallback | structured-data | 2 | medium | medium | diagnostic |
 | sd.no-duplicate-types | structured-data | 2 | medium | low | diagnostic |
+| sd.sameas-entity | structured-data | 3 | high | medium | opportunity |
+| sd.breadcrumb-valid | structured-data | 2 | medium | medium | opportunity |
 | cit.title | citation | 2 | critical | low | diagnostic |
 | cit.meta-description | citation | 2 | high | low | opportunity |
 | cit.canonical | citation | 3 | high | low | diagnostic |
@@ -226,11 +265,14 @@ Fails under 100 words of body text (script/style/nav/footer stripped). Warns und
 | cit.lang-attr | citation | 2 | medium | low | diagnostic |
 | cit.author-visible | citation | 4 | high | medium | opportunity |
 | cit.dates | citation | 5 | high | low | opportunity |
+| cit.content-freshness | citation | 3 | high | low | opportunity |
 | cnt.single-h1 | content | 3 | high | low | diagnostic |
 | cnt.heading-hierarchy | content | 3 | medium | medium | diagnostic |
 | cnt.image-alt | content | 3 | medium | medium | opportunity |
 | cnt.tldr-or-faq | content | 5 | high | medium | opportunity |
 | cnt.word-count | content | 2 | high | high | opportunity |
+| cnt.qa-structure | content | 3 | high | medium | opportunity |
+| cnt.external-citations | content | 2 | medium | medium | opportunity |
 
 ---
 

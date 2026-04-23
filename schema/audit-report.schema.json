@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/BaRam-OSS/geo-checker/main/schema/audit-report.schema.json",
+  "title": "geo-checker AuditReport",
+  "description": "Schema for the JSON output of geo-checker. Pinned at schemaVersion 1; new fields are additive and optional.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "url",
+    "finalUrl",
+    "fetchedAt",
+    "renderMode",
+    "overall",
+    "categories",
+    "warnings",
+    "version",
+    "meta",
+    "timing"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "url": { "type": "string", "format": "uri" },
+    "finalUrl": { "type": "string", "format": "uri" },
+    "fetchedAt": { "type": "string", "format": "date-time" },
+    "renderMode": { "enum": ["static", "rendered"] },
+    "overall": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "version": { "type": "string" },
+    "meta": {
+      "type": "object",
+      "required": ["toolVersion", "nodeVersion"],
+      "additionalProperties": false,
+      "properties": {
+        "toolVersion": { "type": "string" },
+        "nodeVersion": { "type": "string" },
+        "userAgent": { "type": "string" },
+        "configPath": { "type": "string" }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "required": ["fetchMs", "auditMs", "totalMs"],
+      "additionalProperties": false,
+      "properties": {
+        "fetchMs": { "type": "integer", "minimum": 0 },
+        "auditMs": { "type": "integer", "minimum": 0 },
+        "totalMs": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "categories": {
+      "type": "object",
+      "required": ["crawler", "structured-data", "citation", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "crawler": { "$ref": "#/$defs/CategoryReport" },
+        "structured-data": { "$ref": "#/$defs/CategoryReport" },
+        "citation": { "$ref": "#/$defs/CategoryReport" },
+        "content": { "$ref": "#/$defs/CategoryReport" }
+      }
+    }
+  },
+  "$defs": {
+    "Status": { "enum": ["pass", "warn", "fail", "skip"] },
+    "Group": { "enum": ["opportunity", "diagnostic", "info"] },
+    "Impact": { "enum": ["critical", "high", "medium", "low"] },
+    "Effort": { "enum": ["low", "medium", "high"] },
+    "EvidenceLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "selector": { "type": "string" },
+        "snippet": { "type": "string" },
+        "line": { "type": "integer", "minimum": 0 },
+        "col": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "RuleResultEntry": {
+      "type": "object",
+      "required": ["id", "title", "weight", "status", "score", "rationale"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "stableId": { "type": "string" },
+        "title": { "type": "string" },
+        "weight": { "type": "number", "exclusiveMinimum": 0 },
+        "group": { "$ref": "#/$defs/Group" },
+        "impact": { "$ref": "#/$defs/Impact" },
+        "effort": { "$ref": "#/$defs/Effort" },
+        "docsUrl": { "type": "string", "format": "uri" },
+        "durationMs": { "type": "integer", "minimum": 0 },
+        "status": { "$ref": "#/$defs/Status" },
+        "score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "rationale": { "type": "string" },
+        "evidence": {},
+        "locations": { "type": "array", "items": { "$ref": "#/$defs/EvidenceLocation" } },
+        "fixUrl": { "type": "string", "format": "uri" },
+        "fixHint": { "type": "string" },
+        "estimatedImpact": { "type": "number", "minimum": 0 }
+      }
+    },
+    "CategoryReport": {
+      "type": "object",
+      "required": ["score", "weight", "results"],
+      "additionalProperties": false,
+      "properties": {
+        "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "weight": { "type": "number", "minimum": 0 },
+        "results": { "type": "array", "items": { "$ref": "#/$defs/RuleResultEntry" } }
+      }
+    }
+  }
+}

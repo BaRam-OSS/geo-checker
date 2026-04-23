@@ -48,6 +48,7 @@ export interface AuditContext {
   status: number;
   robots: RobotsTxt | null;
   llmsTxt: LlmsTxt | null;
+  llmsFullTxt: string | null;
   sitemap: SitemapSummary | null;
   jsonLd: unknown[];
   renderMode: 'static' | 'rendered';
@@ -136,6 +137,18 @@ export interface AuditReport {
   timing: ReportTiming;
 }
 
+export interface RuleOverride {
+  enabled?: boolean;
+  weight?: number;
+}
+
+export interface GeoConfig {
+  extends?: 'default';
+  rules?: Record<string, RuleOverride>;
+  categories?: Partial<Record<Category, { weight?: number }>>;
+  extraRules?: Rule[];
+}
+
 export interface AuditOptions {
   render?: boolean;
   timeoutMs?: number;
@@ -143,6 +156,8 @@ export interface AuditOptions {
   extraRules?: Rule[];
   only?: string[];
   categories?: Category[];
+  config?: GeoConfig;
+  configPath?: string;
 }
 
 export function defineRule(rule: Rule): Rule {

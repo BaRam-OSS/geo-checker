@@ -4,6 +4,8 @@ import { schemaTypeRecognizedRule } from './schema-type-recognized.js';
 import { requiredFieldsRule } from './required-fields.js';
 import { microdataFallbackRule } from './microdata-fallback.js';
 import { noDuplicateTypesRule } from './no-duplicate-types.js';
+import { sameAsEntityRule } from './sameas-entity.js';
+import { breadcrumbValidRule } from './breadcrumb-valid.js';
 
 export const structuredDataRules = [
   jsonLdPresentRule,
@@ -12,4 +14,6 @@ export const structuredDataRules = [
   requiredFieldsRule,
   microdataFallbackRule,
   noDuplicateTypesRule,
+  sameAsEntityRule,
+  breadcrumbValidRule,
 ];

@@ -15,6 +15,7 @@ function fakeContext(): AuditContext {
     status: 200,
     robots: null,
     llmsTxt: null,
+    llmsFullTxt: null,
     sitemap: null,
     jsonLd: [],
     renderMode: 'static',

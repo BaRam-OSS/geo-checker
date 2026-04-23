@@ -22,7 +22,7 @@
 
 ## 왜 필요한가요?
 
-기존 SEO 도구는 **구글 검색이 내 페이지를 랭킹할 수 있는지**를 점검합니다. `geo-checker`는 한 걸음 더 나아가, **AI 검색 엔진이 내 페이지를 인용할 수 있는지**를 점검합니다. 25개의 온페이지 신호를 4개의 가중치 범주에 걸쳐 검사하고, 0–100점의 카테고리 점수와 함께 인터랙티브 HTML 리포트, 우선순위가 매겨진 개선 기회(Opportunities), 구체적인 수정 방법을 제공합니다.
+기존 SEO 도구는 **구글 검색이 내 페이지를 랭킹할 수 있는지**를 점검합니다. `geo-checker`는 한 걸음 더 나아가, **AI 검색 엔진이 내 페이지를 인용할 수 있는지**를 점검합니다. **31개의 온페이지 신호**를 4개의 가중치 범주에 걸쳐 검사하고, 0–100점의 카테고리 점수와 함께 인터랙티브 HTML 리포트, 우선순위가 매겨진 개선 기회(Opportunities), 구체적인 수정 방법을 제공합니다.
 
 Google Lighthouse에서 영감을 받아 만들었지만, 대상은 GEO입니다 — AI 크롤러 robots 규칙, `llms.txt`, schema.org 그래프 품질, 인용 신호 등.
 
@@ -71,13 +71,45 @@ geo-checker https://example.com --fail-on warn
 | `--json` | JSON을 stdout으로 출력. |
 | `--html <path>` | 독립 실행형 HTML 리포트를 `<path>`에 저장. `-`이면 stdout. |
 | `--out <dir>` | `<dir>`에 `report.json` + `report.html`을 함께 저장 (디렉터리 자동 생성). |
+| `--csv <path>` | 룰별 1행의 플랫 CSV 저장 — BI 대시보드 인제스트용. |
+| `--md <path>` | 점수 뱃지 + 이슈 표가 담긴 Markdown PR 코멘트 템플릿 저장. |
+| `--sarif <path>` | **GitHub Code Scanning** 통합용 SARIF 2.1.0 리포트 저장. |
+| `--baseline <prev.json>` | 이전 JSON 리포트와 비교하여 카테고리 delta, 회귀, 해결 항목 출력. |
+| `--config <path>` | 설정 파일 로드 (기본값: cwd의 `geo-checker.config.{json,mjs,js}`). |
 | `--render` | Playwright 기반 헤드리스 Chromium 사용 (선택 의존성). |
 | `--category <names>` | 쉼표 구분: `crawler`, `structured-data`, `citation`, `content`. |
 | `--only <ids>` | 실행할 rule ID (또는 stableId) 쉼표 구분. |
 | `--fail-on <level>` | `fail`(기본) 또는 `warn`. |
 | `--timeout <ms>` | 요청당 타임아웃 (기본 20 000). |
 
+**배치 모드:**
+
+```sh
+# urls.txt의 모든 URL(한 줄 하나, `#` 주석 허용) 감사, 동시성 4
+geo-checker batch urls.txt --out ./reports --concurrency 4
+```
+
+URL별 `<slug>.json` + `<slug>.html`과 집계된 `summary.json`을 생성합니다. 한 URL 실패가 전체 배치를 중단시키지 않습니다.
+
 **종료 코드:** `0` 성공 · `1` 정책 실패 · `2` 런타임 오류.
+
+## 설정 파일
+
+프로젝트 루트에 `geo-checker.config.json` (또는 `--config <path>`)을 두면 룰을 끄거나, 가중치를 조정하거나, 커스텀 룰을 주입할 수 있습니다:
+
+```json
+{
+  "rules": {
+    "cnt.word-count": { "enabled": false },
+    "crawler.robots-ai-allow": { "weight": 10 }
+  },
+  "categories": {
+    "structured-data": { "weight": 40 }
+  }
+}
+```
+
+`.mjs` / `.js`도 지원합니다 (`export default` 로 config 객체 내보내기). 모든 stableId 목록은 [`docs/rules.md`](./docs/rules.md) 참조.
 
 ## HTML 리포트
 
@@ -120,10 +152,10 @@ await fs.writeFile('report.json', toJson(report));
 
 | 카테고리 | 검사 항목 | 룰 수 | 가중치 |
 |---|---|---:|---:|
-| **AI Crawler Access** | HTTPS, robots.txt 도달성, AI 봇 허용 목록 (GPTBot, Google-Extended, ClaudeBot, PerplexityBot, CCBot, Amazonbot, anthropic-ai), `llms.txt`, sitemap.xml | 6 | 25 |
-| **Structured Data** | JSON-LD 존재/유효성, 인식 가능한 schema.org 타입, 필수 필드 커버리지 (Article, FAQPage, HowTo, Product, Organization, …), microdata/RDFa 폴백, 중복 primary 타입 검사 | 6 | 30 |
-| **Citation Signals** | `<title>`, meta description, canonical, Open Graph, Twitter Card, `<html lang>`, 저자, 게시/수정 날짜 | 8 | 25 |
-| **Content Structure** | 단일 `<h1>`, 헤딩 계층, 이미지 alt 커버리지, TL;DR / FAQ 블록, 단어 수 | 5 | 20 |
+| **AI Crawler Access** | HTTPS, robots.txt 도달성, **17개 AI 봇 허용 목록** (GPTBot, OAI-SearchBot, ChatGPT-User, Google-Extended, Google-CloudVertexBot, ClaudeBot, anthropic-ai, Claude-Web, PerplexityBot, Applebot-Extended, Meta-ExternalAgent, Bytespider, DuckAssistBot, YouBot, cohere-ai, CCBot, Amazonbot), `llms.txt`, `llms-full.txt`, sitemap.xml | 7 | 25 |
+| **Structured Data** | JSON-LD 존재/유효성, 인식 가능한 schema.org 타입, 필수 필드 커버리지, microdata/RDFa 폴백, 중복 primary 타입 검사, `sameAs` 지식 그래프 연결, BreadcrumbList 아이템 유효성 | 8 | 30 |
+| **Citation Signals** | `<title>`, meta description, canonical, Open Graph, Twitter Card, `<html lang>`, 저자, 게시/수정 날짜, 콘텐츠 신선도(dateModified ≤ 1년) | 9 | 25 |
+| **Content Structure** | 단일 `<h1>`, 헤딩 계층, 이미지 alt 커버리지, TL;DR / FAQ 블록, 단어 수, 답 추출용 Q&A 구조, 외부 인용(E-E-A-T) | 7 | 20 |
 
 모든 룰은 다음 필드를 선언합니다:
 
@@ -192,15 +224,38 @@ on: [push, pull_request]
 jobs:
   geo:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write  # SARIF 업로드용
+      pull-requests: write    # PR 코멘트용
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-      - run: npx -y geo-checker https://staging.example.com --fail-on warn --out ./geo
+      - run: |
+          npx -y geo-checker https://staging.example.com \
+            --fail-on warn \
+            --out ./geo \
+            --sarif ./geo/results.sarif \
+            --md ./geo/summary.md
       - uses: actions/upload-artifact@v4
         with:
           name: geo-report
           path: ./geo
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ./geo/results.sarif
+      - if: github.event_name == 'pull_request'
+        run: gh pr comment ${{ github.event.pull_request.number }} --body-file ./geo/summary.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+**회귀 추적** 은 마지막 안정 `report.json`을 저장해두고 `--baseline`으로 넘기면 됩니다:
+
+```sh
+geo-checker https://staging.example.com --baseline ./baselines/main.json --out ./geo
 ```
 
 ## 라이선스

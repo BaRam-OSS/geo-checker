@@ -1,4 +1,4 @@
-# Contributing to geo-audit
+# Contributing to geo-checker
 
 Thanks for your interest. This project welcomes new rules, bug fixes, and documentation improvements.
 

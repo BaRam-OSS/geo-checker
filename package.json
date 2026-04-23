@@ -1,5 +1,5 @@
 {
-  "name": "geo-audit",
+  "name": "geo-checker",
   "version": "0.1.0",
   "description": "Lighthouse-style auditor for Generative Engine Optimization (GEO). Checks llms.txt, schema.org, AI-crawler robots rules, and citation signals that help your site get cited by ChatGPT, Claude, Gemini, and Perplexity.",
   "keywords": [
@@ -16,13 +16,13 @@
     "claude",
     "gemini"
   ],
-  "homepage": "https://github.com/BaRam-OSS/geo-audit#readme",
+  "homepage": "https://github.com/BaRam-OSS/geo-checker#readme",
   "bugs": {
-    "url": "https://github.com/BaRam-OSS/geo-audit/issues"
+    "url": "https://github.com/BaRam-OSS/geo-checker/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BaRam-OSS/geo-audit.git"
+    "url": "git+https://github.com/BaRam-OSS/geo-checker.git"
   },
   "license": "MIT",
   "author": "BaRam-OSS",
@@ -43,7 +43,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.cts",
   "bin": {
-    "geo-audit": "./dist/cli.cjs"
+    "geo-checker": "./dist/cli.cjs"
   },
   "files": [
     "dist",

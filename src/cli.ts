@@ -4,7 +4,7 @@ import kleur from 'kleur';
 
 const pkgVersion = '0.1.0';
 
-const cli = cac('geo-audit');
+const cli = cac('geo-checker');
 
 cli
   .command('<url>', 'Audit a URL for GEO (Generative Engine Optimization) readiness')
@@ -18,7 +18,7 @@ cli
   .action(async (_url: string) => {
     console.error(
       kleur.yellow(
-        'geo-audit scaffold build: audit logic is not wired up yet. Run after Phase 1 lands.',
+        'geo-checker scaffold build: audit logic is not wired up yet. Run after Phase 1 lands.',
       ),
     );
     process.exit(2);
@@ -33,6 +33,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(kleur.red('geo-audit crashed:'), err instanceof Error ? err.message : err);
+  console.error(kleur.red('geo-checker crashed:'), err instanceof Error ? err.message : err);
   process.exit(2);
 });

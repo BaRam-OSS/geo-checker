@@ -9,7 +9,7 @@ export function parseLlmsTxt(raw: string): LlmsTxt {
   let summary: string | null = null;
   const sections: LlmsTxtSection[] = [];
   let currentSection: LlmsTxtSection | null = null;
-  let summaryParts: string[] = [];
+  const summaryParts: string[] = [];
   let inSummaryPhase = false;
 
   for (const line of lines) {

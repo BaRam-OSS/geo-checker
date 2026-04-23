@@ -22,7 +22,7 @@ npx geo-checker https://example.com
 npm install --save-dev geo-checker
 ```
 
-Node.js 18 or later required.
+Node.js 20.18.1 or later required.
 
 ## Usage — CLI
 

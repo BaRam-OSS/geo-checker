@@ -18,4 +18,4 @@ Initial public release.
 - **Static fetching** via undici with manual redirect handling (up to 5 hops) and a 20 s default timeout.
 - **Optional `--render` mode** powered by playwright (declared as an optional dependency; not pulled in unless the flag is used).
 - **SPA detection**: when a page has <500 chars of body text plus a SPA root element, the report surfaces a `warnings` entry suggesting `--render`.
-- MIT License. Dual CJS + ESM build via tsup. Node ≥18.
+- MIT License. Dual CJS + ESM build via tsup. Node ≥20.18.1 (cheerio 1.1+ requirement).

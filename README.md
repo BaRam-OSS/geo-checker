@@ -5,7 +5,7 @@
 <h1 align="center">geo-checker</h1>
 
 <p align="center">
-  <b>Generative Engine Optimization(GEO)</b>을 위한 Lighthouse급 감사 도구. ChatGPT · Claude · Gemini · Perplexity 같은 AI 검색 엔진이 내 사이트를 얼마나 잘 발견하고, 이해하고, 인용할 수 있는지 측정합니다.
+  Lighthouse-grade auditor for <b>Generative Engine Optimization (GEO)</b>. Measures how ready your site is to be found, understood, and cited by ChatGPT · Claude · Gemini · Perplexity.
 </p>
 
 <p align="center">
@@ -15,83 +15,83 @@
 </p>
 
 <p align="center">
-  <b>한국어</b> · <a href="./README.en.md">English</a>
+  <a href="./README.ko.md">한국어</a> · <b>English</b>
 </p>
 
 ---
 
-## 왜 필요한가요?
+## Why
 
-기존 SEO 도구는 **구글 검색이 내 페이지를 랭킹할 수 있는지**를 점검합니다. `geo-checker`는 한 걸음 더 나아가, **AI 검색 엔진이 내 페이지를 인용할 수 있는지**를 점검합니다. 25개의 온페이지 신호를 4개의 가중치 범주에 걸쳐 검사하고, 0–100점의 카테고리 점수와 함께 인터랙티브 HTML 리포트, 우선순위가 매겨진 개선 기회(Opportunities), 구체적인 수정 방법을 제공합니다.
+SEO tools tell you whether **Google** can rank your page. `geo-checker` tells you whether **AI search engines** can cite it. It inspects 25 on-page signals across four weighted categories and returns a 0–100 score per category — plus an interactive HTML report, prioritized Opportunities, and concrete fixes.
 
-Google Lighthouse에서 영감을 받아 만들었지만, 대상은 GEO입니다 — AI 크롤러 robots 규칙, `llms.txt`, schema.org 그래프 품질, 인용 신호 등.
+Inspired by Google Lighthouse, but built for GEO: AI-crawler robots rules, `llms.txt`, schema.org graph quality, citation signals.
 
-## 설치
+## Install
 
 ```sh
-# 일회성 실행
+# One-off
 npx geo-checker https://example.com
 
-# 또는 개발 의존성으로 추가
+# Or as a dev dependency
 npm install --save-dev geo-checker
 ```
 
-Node.js **20.18.1 이상**이 필요합니다.
+Requires Node.js **≥ 20.18.1**.
 
-## 사용법 — CLI
+## Usage — CLI
 
 ```sh
-# 터미널 출력 (impact 칩 + 타이밍 포함)
+# Pretty terminal output (with impact chips and timing)
 geo-checker https://example.com
 
-# 독립 실행형 HTML 리포트 생성
+# Standalone interactive HTML report
 geo-checker https://example.com --html report.html
 
-# report.json + report.html을 함께 디렉터리에 저장
+# Write report.json + report.html side-by-side
 geo-checker https://example.com --out ./reports
 
-# stdout으로 JSON 출력 (jq, CI 파이프라이닝용)
+# JSON to stdout (for piping to jq, CI, etc.)
 geo-checker https://example.com --json > report.json
 
-# SPA / JS 렌더링 사이트 (playwright 선택 의존성 필요)
+# SPA / JS-rendered sites (requires optional playwright)
 geo-checker https://example.com --render
 
-# 특정 카테고리나 룰만 실행
+# Filter to a single category or rule set
 geo-checker https://example.com --category crawler
 geo-checker https://example.com --only crawler.https,sd.required-fields
 
-# CI 모드 — warn 또는 fail 시 exit 1
+# CI mode — exit 1 on warn or fail
 geo-checker https://example.com --fail-on warn
 ```
 
-**전체 플래그 목록:**
+**All flags:**
 
-| 플래그 | 설명 |
+| Flag | Description |
 |---|---|
-| `--json` | JSON을 stdout으로 출력. |
-| `--html <path>` | 독립 실행형 HTML 리포트를 `<path>`에 저장. `-`이면 stdout. |
-| `--out <dir>` | `<dir>`에 `report.json` + `report.html`을 함께 저장 (디렉터리 자동 생성). |
-| `--render` | Playwright 기반 헤드리스 Chromium 사용 (선택 의존성). |
-| `--category <names>` | 쉼표 구분: `crawler`, `structured-data`, `citation`, `content`. |
-| `--only <ids>` | 실행할 rule ID (또는 stableId) 쉼표 구분. |
-| `--fail-on <level>` | `fail`(기본) 또는 `warn`. |
-| `--timeout <ms>` | 요청당 타임아웃 (기본 20 000). |
+| `--json` | Emit JSON to stdout. |
+| `--html <path>` | Write a self-contained HTML report to `<path>`. Use `-` for stdout. |
+| `--out <dir>` | Write `report.json` + `report.html` to `<dir>` (directory is created if missing). |
+| `--render` | Use headless Chromium via Playwright (optional dep). |
+| `--category <names>` | Comma-separated: `crawler`, `structured-data`, `citation`, `content`. |
+| `--only <ids>` | Comma-separated rule IDs (or stableIds) to run. |
+| `--fail-on <level>` | `fail` (default) or `warn`. |
+| `--timeout <ms>` | Per-request timeout (default 20 000). |
 
-**종료 코드:** `0` 성공 · `1` 정책 실패 · `2` 런타임 오류.
+**Exit codes:** `0` success · `1` policy failure · `2` runtime error.
 
-## HTML 리포트
+## The HTML report
 
-`--html`은 외부 CSS, 폰트, 네트워크 호출 없이 작동하는 단일 HTML 파일을 생성합니다. 브라우저에서 바로 열면 Lighthouse와 유사한 UX를 경험할 수 있습니다:
+`--html` produces a single, self-contained HTML file — no external CSS, fonts, or network calls. Open it in any browser. It mirrors the Lighthouse UX:
 
-- **점수 링(Score Ring)** — 전체 점수와 카테고리별 점수.
-- **Opportunities** — 고치면 회복할 수 있는 점수 순으로 정렬된 개선 기회.
-- **Diagnostics** — 나머지 비통과 감사 항목, 카테고리별로 그룹핑.
-- **Passed audits** — 기본적으로 접혀 있음.
-- **Raw JSON** — 다른 도구로 파이핑할 수 있는 Copy-to-clipboard 버튼.
+- **Score rings** for overall and each category.
+- **Opportunities** section — ranked by the points you would recover by fixing each issue.
+- **Diagnostics** — the remaining non-passing audits, grouped by category.
+- **Passed audits** — collapsed by default.
+- **Raw JSON** — copy-to-clipboard button for piping into other tools.
 
-라이트/다크 모드에 자동으로 대응합니다. 일반 페이지 기준 ~60–80 KB.
+Auto-adapts to light/dark mode. ~60–80 KB for a typical page.
 
-## 사용법 — 프로그래매틱 API
+## Usage — Programmatic
 
 ```ts
 import { audit } from 'geo-checker';
@@ -104,7 +104,7 @@ console.log(report.timing);                        // { fetchMs, auditMs, totalM
 console.log(report.meta);                          // { toolVersion, nodeVersion, ... }
 ```
 
-### HTML 또는 JSON 리포트를 직접 렌더링
+### Render an HTML or JSON report directly
 
 ```ts
 import { audit } from 'geo-checker';
@@ -116,25 +116,25 @@ await fs.writeFile('report.html', toHtml(report));
 await fs.writeFile('report.json', toJson(report));
 ```
 
-## 무엇을 검사하나요?
+## What gets checked
 
-| 카테고리 | 검사 항목 | 룰 수 | 가중치 |
+| Category | Signals | Rules | Weight |
 |---|---|---:|---:|
-| **AI Crawler Access** | HTTPS, robots.txt 도달성, AI 봇 허용 목록 (GPTBot, Google-Extended, ClaudeBot, PerplexityBot, CCBot, Amazonbot, anthropic-ai), `llms.txt`, sitemap.xml | 6 | 25 |
-| **Structured Data** | JSON-LD 존재/유효성, 인식 가능한 schema.org 타입, 필수 필드 커버리지 (Article, FAQPage, HowTo, Product, Organization, …), microdata/RDFa 폴백, 중복 primary 타입 검사 | 6 | 30 |
-| **Citation Signals** | `<title>`, meta description, canonical, Open Graph, Twitter Card, `<html lang>`, 저자, 게시/수정 날짜 | 8 | 25 |
-| **Content Structure** | 단일 `<h1>`, 헤딩 계층, 이미지 alt 커버리지, TL;DR / FAQ 블록, 단어 수 | 5 | 20 |
+| **AI Crawler Access** | HTTPS, robots.txt reachability, AI-bot allow-lists (GPTBot, Google-Extended, ClaudeBot, PerplexityBot, CCBot, Amazonbot, anthropic-ai), `llms.txt`, sitemap.xml | 6 | 25 |
+| **Structured Data** | JSON-LD presence & validity, recognised schema.org types, required-field coverage (Article, FAQPage, HowTo, Product, Organization, …), microdata/RDFa fallback, no duplicate primary types | 6 | 30 |
+| **Citation Signals** | `<title>`, meta description, canonical, Open Graph, Twitter Card, `<html lang>`, author, publish/modified dates | 8 | 25 |
+| **Content Structure** | single `<h1>`, heading hierarchy, image alt coverage, TL;DR / FAQ blocks, word count | 5 | 20 |
 
-모든 룰은 다음 필드를 선언합니다:
+Every rule declares:
 
-- **`stableId`** — CI 예산용 고정 식별자 (절대 변경되지 않음).
+- **`stableId`** — frozen identifier for CI budgets (never renamed).
 - **`impact`** — `critical` / `high` / `medium` / `low`.
-- **`effort`** — `low` / `medium` / `high` (수정에 걸리는 시간의 대략적인 지표).
-- **`group`** — `opportunity` (회복 가능한 점수) 또는 `diagnostic` (이진 신호).
+- **`effort`** — `low` / `medium` / `high` (roughly how long the fix takes).
+- **`group`** — `opportunity` (points you can recover) or `diagnostic` (binary signal).
 
-전체 룰 목록과 수정 가이드는 [`docs/rules.md`](./docs/rules.md)를 참조하세요.
+See [`docs/rules.md`](./docs/rules.md) for every rule, why it matters for GEO, and how to fix a failure.
 
-## 리포트 스키마
+## Report schema
 
 ```ts
 interface AuditReport {
@@ -152,11 +152,11 @@ interface AuditReport {
 }
 ```
 
-각 감사 결과는 `stableId`, `impact`, `effort`, `group`, `docsUrl`, 그리고 해당되는 경우 `estimatedImpact`(Opportunity가 얼마나 가치 있는 점수인지)를 함께 담고 있습니다.
+Each audit result carries `stableId`, `impact`, `effort`, `group`, `docsUrl`, and, where applicable, `estimatedImpact` (the points an Opportunity is worth).
 
-## 확장성
+## Extensibility
 
-커스텀 룰을 추가하는 방법:
+Add a custom rule:
 
 ```ts
 import { audit, defineRule } from 'geo-checker';
@@ -173,7 +173,7 @@ const hasJsonFeed = defineRule({
   description: 'Site should expose a JSON Feed at /feed.json',
   docsUrl: 'https://example.com/docs/json-feed',
   async run(ctx) {
-    // ctx.$ / ctx.headers / ctx.robots 등을 활용한 검사 로직
+    // ...your logic using ctx.$ / ctx.headers / ctx.robots, etc.
     return { status: 'pass', score: 1, rationale: 'JSON feed found' };
   },
 });
@@ -181,9 +181,9 @@ const hasJsonFeed = defineRule({
 const report = await audit('https://example.com', { extraRules: [hasJsonFeed] });
 ```
 
-커스텀 룰은 기본 룰과 자동으로 병합되며, 모든 reporter에서 동일하게 출력됩니다.
+Custom rules are merged with the defaults and appear in every reporter automatically.
 
-## CI 레시피
+## CI recipe
 
 ```yaml
 # .github/workflows/geo.yml
@@ -203,10 +203,10 @@ jobs:
           path: ./geo
 ```
 
-## 라이선스
+## License
 
-MIT © BaRam-OSS. [LICENSE](./LICENSE) 참조.
+MIT © BaRam-OSS. See [LICENSE](./LICENSE).
 
-## 기여하기
+## Contributing
 
-새로운 룰, 픽스처, 문서 개선 등 PR을 환영합니다. [CONTRIBUTING.md](./CONTRIBUTING.md) 참조.
+PRs welcome — especially new rules, fixtures, and docs. See [CONTRIBUTING.md](./CONTRIBUTING.md).

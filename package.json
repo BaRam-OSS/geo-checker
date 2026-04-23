@@ -1,0 +1,87 @@
+{
+  "name": "geo-audit",
+  "version": "0.1.0",
+  "description": "Lighthouse-style auditor for Generative Engine Optimization (GEO). Checks llms.txt, schema.org, AI-crawler robots rules, and citation signals that help your site get cited by ChatGPT, Claude, Gemini, and Perplexity.",
+  "keywords": [
+    "geo",
+    "aeo",
+    "llms.txt",
+    "schema.org",
+    "ai-search",
+    "seo",
+    "lighthouse",
+    "audit",
+    "chatgpt",
+    "perplexity",
+    "claude",
+    "gemini"
+  ],
+  "homepage": "https://github.com/BaRam-OSS/geo-audit#readme",
+  "bugs": {
+    "url": "https://github.com/BaRam-OSS/geo-audit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BaRam-OSS/geo-audit.git"
+  },
+  "license": "MIT",
+  "author": "BaRam-OSS",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "bin": {
+    "geo-audit": "./dist/cli.cjs"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "cheerio": "^1.0.0",
+    "cli-table3": "^0.6.5",
+    "kleur": "^4.1.5",
+    "undici": "^7.0.0"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.48.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.4.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

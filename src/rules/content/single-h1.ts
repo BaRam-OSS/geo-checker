@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const singleH1Rule = defineRule({
   id: 'cnt.single-h1',
+  stableId: 'cnt.single-h1',
   category: 'content',
+  group: 'diagnostic',
   weight: 3,
+  impact: 'high',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#cntsingle-h1',
   title: 'Exactly one <h1>',
   description: 'A single H1 tells AI engines the primary topic of the page without ambiguity.',
   run(ctx) {

@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const robotsReachableRule = defineRule({
   id: 'crawler.robots-reachable',
+  stableId: 'crawler.robots-reachable',
   category: 'crawler',
+  group: 'diagnostic',
   weight: 2,
+  impact: 'low',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#crawlerrobots-reachable',
   title: 'robots.txt is reachable',
   description: 'A reachable robots.txt lets crawlers confirm their permissions; missing file is treated as allow-all but blocks explicit signalling.',
   run(ctx) {

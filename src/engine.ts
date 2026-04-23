@@ -1,11 +1,23 @@
-import type { AuditContext, AuditReport, Category, CategoryReport, Rule } from './types.js';
+import type {
+  AuditContext,
+  AuditReport,
+  Category,
+  CategoryReport,
+  ReportMeta,
+  ReportTiming,
+  Rule,
+  RuleResultEntry,
+} from './types.js';
 import { CATEGORY_WEIGHTS } from './types.js';
 
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 
 export interface RunRulesOptions {
   only?: string[];
   categories?: Category[];
+  meta?: Partial<ReportMeta>;
+  fetchMs?: number;
+  startedAt?: number;
 }
 
 export async function runRules(
@@ -13,6 +25,7 @@ export async function runRules(
   rules: Rule[],
   opts: RunRulesOptions = {},
 ): Promise<AuditReport> {
+  const auditStart = performance.now();
   const onlySet = opts.only ? new Set(opts.only) : null;
   const catSet = opts.categories ? new Set<Category>(opts.categories) : null;
 
@@ -24,9 +37,10 @@ export async function runRules(
   };
 
   for (const rule of rules) {
-    if (onlySet && !onlySet.has(rule.id)) continue;
+    if (onlySet && !onlySet.has(rule.id) && (!rule.stableId || !onlySet.has(rule.stableId))) continue;
     if (catSet && !catSet.has(rule.category)) continue;
 
+    const ruleStart = performance.now();
     let result;
     try {
       result = await rule.run(ctx);
@@ -37,13 +51,22 @@ export async function runRules(
         rationale: `Rule crashed: ${err instanceof Error ? err.message : String(err)}`,
       };
     }
+    const durationMs = Math.round(performance.now() - ruleStart);
 
-    buckets[rule.category].results.push({
+    const entry: RuleResultEntry = {
       id: rule.id,
       title: rule.title,
       weight: rule.weight,
       ...result,
-    });
+      durationMs,
+    };
+    if (rule.stableId !== undefined) entry.stableId = rule.stableId;
+    if (rule.group !== undefined) entry.group = rule.group;
+    if (rule.impact !== undefined) entry.impact = rule.impact;
+    if (rule.effort !== undefined) entry.effort = rule.effort;
+    if (rule.docsUrl !== undefined) entry.docsUrl = rule.docsUrl;
+
+    buckets[rule.category].results.push(entry);
   }
 
   for (const cat of Object.keys(buckets) as Category[]) {
@@ -68,7 +91,22 @@ export async function runRules(
   }
   const overall = overallWeight === 0 ? 0 : Math.round(overallWeighted / overallWeight);
 
+  const auditMs = Math.round(performance.now() - auditStart);
+  const fetchMs = Math.max(0, Math.round(opts.fetchMs ?? 0));
+  const totalMs =
+    opts.startedAt !== undefined ? Math.round(performance.now() - opts.startedAt) : fetchMs + auditMs;
+
+  const meta: ReportMeta = {
+    toolVersion: VERSION,
+    nodeVersion: process.versions.node,
+  };
+  if (opts.meta?.userAgent !== undefined) meta.userAgent = opts.meta.userAgent;
+  if (opts.meta?.configPath !== undefined) meta.configPath = opts.meta.configPath;
+
+  const timing: ReportTiming = { fetchMs, auditMs, totalMs };
+
   return {
+    schemaVersion: 1,
     url: ctx.url,
     finalUrl: ctx.finalUrl,
     fetchedAt: ctx.fetchedAt,
@@ -77,5 +115,7 @@ export async function runRules(
     categories: buckets,
     warnings: [...ctx.warnings],
     version: VERSION,
+    meta,
+    timing,
   };
 }

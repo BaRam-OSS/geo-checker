@@ -1,12 +1,15 @@
 #!/usr/bin/env node
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, resolve as resolvePath } from 'node:path';
 import { cac } from 'cac';
 import kleur from 'kleur';
 import { audit } from './index.js';
 import { toJson } from './reporters/json.js';
 import { toCli } from './reporters/cli.js';
+import { toHtml } from './reporters/html.js';
 import type { Category, Status, AuditReport } from './types.js';
 
-const pkgVersion = '0.1.0';
+const pkgVersion = '0.2.0';
 
 const VALID_CATEGORIES: Category[] = ['crawler', 'structured-data', 'citation', 'content'];
 
@@ -14,11 +17,19 @@ type FailOn = 'fail' | 'warn';
 
 interface CliFlags {
   json?: boolean;
+  html?: string;
+  out?: string;
   render?: boolean;
   category?: string;
   only?: string;
   failOn?: FailOn;
   timeout?: string | number;
+}
+
+async function writeReportFile(path: string, content: string): Promise<void> {
+  const abs = resolvePath(path);
+  await mkdir(dirname(abs), { recursive: true });
+  await writeFile(abs, content, 'utf8');
 }
 
 function parseCategories(raw?: string): Category[] | undefined {
@@ -56,6 +67,8 @@ const cli = cac('geo-checker');
 cli
   .command('<url>', 'Audit a URL for GEO (Generative Engine Optimization) readiness')
   .option('--json', 'Output a JSON report to stdout')
+  .option('--html <path>', 'Write a standalone HTML report to <path> (use - for stdout)')
+  .option('--out <dir>', 'Write report.json and report.html to <dir>')
   .option('--render', 'Use a headless browser (requires optional playwright dependency)')
   .option('--category <names>', 'Run only the given categories (comma-separated)')
   .option('--only <ids>', 'Run only the given rule IDs (comma-separated)')
@@ -75,9 +88,28 @@ cli
       ...(typeof timeoutMs === 'number' && !Number.isNaN(timeoutMs) ? { timeoutMs } : {}),
     });
 
+    const wroteFile = Boolean(flags.out) || (flags.html && flags.html !== '-');
+
+    if (flags.out) {
+      const dir = flags.out;
+      await writeReportFile(resolvePath(dir, 'report.json'), toJson(report));
+      await writeReportFile(resolvePath(dir, 'report.html'), toHtml(report));
+      process.stderr.write(kleur.gray(`wrote ${resolvePath(dir, 'report.json')}\n`));
+      process.stderr.write(kleur.gray(`wrote ${resolvePath(dir, 'report.html')}\n`));
+    }
+
+    if (flags.html) {
+      if (flags.html === '-') {
+        process.stdout.write(toHtml(report));
+      } else {
+        await writeReportFile(flags.html, toHtml(report));
+        process.stderr.write(kleur.gray(`wrote ${resolvePath(flags.html)}\n`));
+      }
+    }
+
     if (flags.json) {
       process.stdout.write(toJson(report) + '\n');
-    } else {
+    } else if (!wroteFile && flags.html !== '-') {
       process.stdout.write(toCli(report) + '\n');
     }
 

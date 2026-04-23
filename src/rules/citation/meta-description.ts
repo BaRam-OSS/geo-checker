@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const metaDescriptionRule = defineRule({
   id: 'cit.meta-description',
+  stableId: 'cit.meta-description',
   category: 'citation',
+  group: 'opportunity',
   weight: 2,
+  impact: 'high',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#citmeta-description',
   title: 'meta description is set (50–160 chars)',
   description: 'AI snippets often quote the meta description verbatim; aim for 50–160 chars.',
   run(ctx) {

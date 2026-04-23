@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const twitterCardRule = defineRule({
   id: 'cit.twitter-card',
+  stableId: 'cit.twitter-card',
   category: 'citation',
+  group: 'opportunity',
   weight: 2,
+  impact: 'low',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#cittwitter-card',
   title: 'Twitter Card metadata is set',
   description: 'twitter:card + twitter:title give better previews on X/Twitter and some AI surfaces that reuse the tags.',
   run(ctx) {

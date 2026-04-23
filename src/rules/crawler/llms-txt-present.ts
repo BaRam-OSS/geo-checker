@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const llmsTxtPresentRule = defineRule({
   id: 'crawler.llms-txt-present',
+  stableId: 'crawler.llms-txt-present',
   category: 'crawler',
+  group: 'opportunity',
   weight: 4,
+  impact: 'medium',
+  effort: 'medium',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#crawlerllms-txt-present',
   title: 'llms.txt is present',
   description: 'An /llms.txt file at the site root gives AI assistants a curated map of the most citation-worthy pages.',
   run(ctx) {

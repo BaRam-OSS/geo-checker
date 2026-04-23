@@ -55,30 +55,75 @@ export interface AuditContext {
   warnings: string[];
 }
 
+export type Impact = 'critical' | 'high' | 'medium' | 'low';
+export type Effort = 'low' | 'medium' | 'high';
+export type RuleGroup = 'opportunity' | 'diagnostic' | 'info';
+
+export interface EvidenceLocation {
+  selector?: string;
+  snippet?: string;
+  line?: number;
+  col?: number;
+}
+
 export interface RuleResult {
   status: Status;
   score: number;
   rationale: string;
   evidence?: unknown;
+  locations?: EvidenceLocation[];
   fixUrl?: string;
+  fixHint?: string;
+  estimatedImpact?: number;
 }
 
 export interface Rule {
   id: string;
+  stableId?: string;
   category: Category;
+  group?: RuleGroup;
   weight: number;
+  impact?: Impact;
+  effort?: Effort;
   title: string;
   description: string;
+  docsUrl?: string;
   run(ctx: AuditContext): Promise<RuleResult> | RuleResult;
+}
+
+export interface RuleResultEntry extends RuleResult {
+  id: string;
+  stableId?: string;
+  title: string;
+  weight: number;
+  group?: RuleGroup;
+  impact?: Impact;
+  effort?: Effort;
+  docsUrl?: string;
+  durationMs?: number;
 }
 
 export interface CategoryReport {
   score: number;
   weight: number;
-  results: Array<RuleResult & { id: string; title: string; weight: number }>;
+  results: RuleResultEntry[];
+}
+
+export interface ReportMeta {
+  toolVersion: string;
+  nodeVersion: string;
+  userAgent?: string;
+  configPath?: string;
+}
+
+export interface ReportTiming {
+  fetchMs: number;
+  auditMs: number;
+  totalMs: number;
 }
 
 export interface AuditReport {
+  schemaVersion: 1;
   url: string;
   finalUrl: string;
   fetchedAt: string;
@@ -87,6 +132,8 @@ export interface AuditReport {
   categories: Record<Category, CategoryReport>;
   warnings: string[];
   version: string;
+  meta: ReportMeta;
+  timing: ReportTiming;
 }
 
 export interface AuditOptions {

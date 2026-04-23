@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const titleRule = defineRule({
   id: 'cit.title',
+  stableId: 'cit.title',
   category: 'citation',
+  group: 'diagnostic',
   weight: 2,
+  impact: 'critical',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#cittitle',
   title: '<title> is set with a reasonable length',
   description: 'The document title is the single most-cited piece of text and should be 10–70 characters.',
   run(ctx) {

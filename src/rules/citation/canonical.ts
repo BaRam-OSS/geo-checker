@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const canonicalRule = defineRule({
   id: 'cit.canonical',
+  stableId: 'cit.canonical',
   category: 'citation',
+  group: 'diagnostic',
   weight: 3,
+  impact: 'high',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#citcanonical',
   title: 'Canonical URL is declared',
   description: 'rel="canonical" tells crawlers which URL is the source of truth, preventing duplicate-citation confusion.',
   run(ctx) {

@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const wordCountRule = defineRule({
   id: 'cnt.word-count',
+  stableId: 'cnt.word-count',
   category: 'content',
+  group: 'opportunity',
   weight: 2,
+  impact: 'high',
+  effort: 'high',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#cntword-count',
   title: 'Page has enough body text',
   description: 'Thin pages (under ~100 words) are rarely cited by AI engines. Aim for ≥300 words of meaningful body copy.',
   run(ctx) {

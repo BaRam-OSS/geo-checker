@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const jsonLdPresentRule = defineRule({
   id: 'sd.jsonld-present',
+  stableId: 'sd.jsonld-present',
   category: 'structured-data',
+  group: 'diagnostic',
   weight: 5,
+  impact: 'critical',
+  effort: 'medium',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#sdjsonld-present',
   title: 'JSON-LD structured data is present',
   description: 'At least one <script type="application/ld+json"> block is the primary way AI engines map your page to an entity.',
   run(ctx) {

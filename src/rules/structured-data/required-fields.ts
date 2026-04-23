@@ -3,8 +3,13 @@ import { flattenJsonLd, getTypes, hasField, REQUIRED_FIELDS } from '../util.js';
 
 export const requiredFieldsRule = defineRule({
   id: 'sd.required-fields',
+  stableId: 'sd.required-fields',
   category: 'structured-data',
+  group: 'opportunity',
   weight: 6,
+  impact: 'high',
+  effort: 'medium',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#sdrequired-fields',
   title: 'Required fields for recognised types are set',
   description: 'Article needs headline/author/datePublished, FAQPage needs mainEntity, Product needs offers, etc.',
   run(ctx) {

@@ -3,8 +3,13 @@ import { flattenJsonLd, getTypes } from '../util.js';
 
 export const tldrOrFaqRule = defineRule({
   id: 'cnt.tldr-or-faq',
+  stableId: 'cnt.tldr-or-faq',
   category: 'content',
+  group: 'opportunity',
   weight: 5,
+  impact: 'high',
+  effort: 'medium',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#cnttldr-or-faq',
   title: 'TL;DR summary or FAQ block',
   description: 'AI engines strongly prefer content with a quotable summary or FAQ — it makes the page "citation-ready".',
   run(ctx) {

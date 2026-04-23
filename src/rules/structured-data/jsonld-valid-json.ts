@@ -3,8 +3,13 @@ import { hasParseError } from '../util.js';
 
 export const jsonLdValidJsonRule = defineRule({
   id: 'sd.jsonld-valid-json',
+  stableId: 'sd.jsonld-valid-json',
   category: 'structured-data',
+  group: 'diagnostic',
   weight: 3,
+  impact: 'high',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#sdjsonld-valid-json',
   title: 'JSON-LD blocks parse as valid JSON',
   description: 'Malformed JSON in an ld+json block is silently ignored by most consumers — a costly silent failure.',
   run(ctx) {

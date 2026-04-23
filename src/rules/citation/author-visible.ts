@@ -3,8 +3,13 @@ import { flattenJsonLd, hasField } from '../util.js';
 
 export const authorVisibleRule = defineRule({
   id: 'cit.author-visible',
+  stableId: 'cit.author-visible',
   category: 'citation',
+  group: 'opportunity',
   weight: 4,
+  impact: 'high',
+  effort: 'medium',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#citauthor-visible',
   title: 'Author is declared',
   description: 'AI engines prefer citing content with an identifiable author; expose one via JSON-LD, meta[name=author], rel=author, or a .author class.',
   run(ctx) {

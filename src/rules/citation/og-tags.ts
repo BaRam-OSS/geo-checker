@@ -4,8 +4,13 @@ const REQUIRED = ['og:title', 'og:type', 'og:url', 'og:image'] as const;
 
 export const ogTagsRule = defineRule({
   id: 'cit.og-tags',
+  stableId: 'cit.og-tags',
   category: 'citation',
+  group: 'opportunity',
   weight: 3,
+  impact: 'high',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#citog-tags',
   title: 'Open Graph tags are set',
   description: 'og:title/type/url/image power rich previews on AI chat, social, and messaging.',
   run(ctx) {

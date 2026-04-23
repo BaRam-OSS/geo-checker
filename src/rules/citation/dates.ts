@@ -3,8 +3,13 @@ import { flattenJsonLd, hasField } from '../util.js';
 
 export const datesRule = defineRule({
   id: 'cit.dates',
+  stableId: 'cit.dates',
   category: 'citation',
+  group: 'opportunity',
   weight: 5,
+  impact: 'high',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#citdates',
   title: 'Publish / modified date is present',
   description: 'AI engines rank recent pages higher; expose datePublished via JSON-LD, <time datetime>, or article:published_time meta.',
   run(ctx) {

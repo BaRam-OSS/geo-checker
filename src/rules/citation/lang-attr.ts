@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const langAttrRule = defineRule({
   id: 'cit.lang-attr',
+  stableId: 'cit.lang-attr',
   category: 'citation',
+  group: 'diagnostic',
   weight: 2,
+  impact: 'medium',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#citlang-attr',
   title: '<html lang> is set',
   description: 'A lang attribute helps AI engines route the page to the right-language search surface (and helps screen readers).',
   run(ctx) {

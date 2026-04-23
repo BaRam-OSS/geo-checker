@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const imageAltRule = defineRule({
   id: 'cnt.image-alt',
+  stableId: 'cnt.image-alt',
   category: 'content',
+  group: 'opportunity',
   weight: 3,
+  impact: 'medium',
+  effort: 'medium',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#cntimage-alt',
   title: '≥80% of <img> have alt text',
   description: 'Alt text gives AI engines a textual anchor for visual content and improves accessibility.',
   run(ctx) {

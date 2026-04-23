@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const headingHierarchyRule = defineRule({
   id: 'cnt.heading-hierarchy',
+  stableId: 'cnt.heading-hierarchy',
   category: 'content',
+  group: 'diagnostic',
   weight: 3,
+  impact: 'medium',
+  effort: 'medium',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#cntheading-hierarchy',
   title: 'Heading levels do not skip',
   description: 'Going from H2 directly to H4 breaks the outline AI engines use to segment content.',
   run(ctx) {

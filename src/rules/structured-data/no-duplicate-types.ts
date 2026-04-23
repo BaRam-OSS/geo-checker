@@ -5,8 +5,13 @@ const UNIQUE_TYPES = new Set(['Article', 'NewsArticle', 'BlogPosting', 'Product'
 
 export const noDuplicateTypesRule = defineRule({
   id: 'sd.no-duplicate-types',
+  stableId: 'sd.no-duplicate-types',
   category: 'structured-data',
+  group: 'diagnostic',
   weight: 2,
+  impact: 'medium',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#sdno-duplicate-types',
   title: 'No conflicting duplicate @types',
   description: 'Multiple competing entities of the same primary type (e.g. two Articles) confuse the engine about which one represents the page.',
   run(ctx) {

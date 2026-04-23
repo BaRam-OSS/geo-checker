@@ -3,8 +3,13 @@ import { isLlmsTxtWellFormed } from '../../fetcher/llms-txt.js';
 
 export const llmsTxtWellformedRule = defineRule({
   id: 'crawler.llms-txt-wellformed',
+  stableId: 'crawler.llms-txt-wellformed',
   category: 'crawler',
+  group: 'opportunity',
   weight: 3,
+  impact: 'medium',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#crawlerllms-txt-wellformed',
   title: 'llms.txt follows the spec',
   description: 'Must start with an H1 project title, then a brief summary, then at least one H2 section containing link items.',
   run(ctx) {

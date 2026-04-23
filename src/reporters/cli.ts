@@ -1,6 +1,6 @@
 import kleur from 'kleur';
 import Table from 'cli-table3';
-import type { AuditReport, Category, Status } from '../types.js';
+import type { AuditReport, Category, Impact, Status } from '../types.js';
 
 const CATEGORY_LABELS: Record<Category, string> = {
   crawler: 'AI Crawler Access',
@@ -28,6 +28,31 @@ function statusBadge(status: Status): string {
   }
 }
 
+function impactChip(impact?: Impact): string {
+  if (!impact) return '';
+  switch (impact) {
+    case 'critical':
+      return kleur.red().bold('[crit]');
+    case 'high':
+      return kleur.red('[high]');
+    case 'medium':
+      return kleur.yellow('[med]');
+    case 'low':
+      return kleur.gray('[low]');
+  }
+}
+
+function renderNote(rationale: string, impact?: Impact, estimatedImpact?: number): string {
+  const parts: string[] = [];
+  const chip = impactChip(impact);
+  if (chip) parts.push(chip);
+  if (estimatedImpact !== undefined && estimatedImpact > 0) {
+    parts.push(kleur.cyan(`+${estimatedImpact}`));
+  }
+  parts.push(rationale);
+  return parts.join(' ');
+}
+
 function bar(score: number, width = 20): string {
   const filled = Math.round((score / 100) * width);
   const empty = width - filled;
@@ -48,7 +73,10 @@ export function toCli(report: AuditReport): string {
     kleur.gray('fetched ') +
       report.fetchedAt +
       kleur.gray('  ·  v') +
-      report.version,
+      report.version +
+      kleur.gray(
+        `  ·  fetch ${report.timing.fetchMs}ms, audit ${report.timing.auditMs}ms, total ${report.timing.totalMs}ms`,
+      ),
   );
   lines.push('');
   lines.push(kleur.bold('Overall ') + colorScore(report.overall) + kleur.gray(' / 100'));
@@ -72,7 +100,7 @@ export function toCli(report: AuditReport): string {
       style: { head: [], border: ['grey'] },
     });
     for (const r of b.results) {
-      table.push([statusBadge(r.status), r.id, r.rationale]);
+      table.push([statusBadge(r.status), r.id, renderNote(r.rationale, r.impact, r.estimatedImpact)]);
     }
     lines.push(
       table

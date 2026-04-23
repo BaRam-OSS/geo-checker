@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const microdataFallbackRule = defineRule({
   id: 'sd.microdata-fallback',
+  stableId: 'sd.microdata-fallback',
   category: 'structured-data',
+  group: 'diagnostic',
   weight: 2,
+  impact: 'medium',
+  effort: 'medium',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#sdmicrodata-fallback',
   title: 'Microdata or RDFa fallback when JSON-LD is missing',
   description: 'If JSON-LD is absent, inline microdata (itemscope/itemtype) or RDFa still gives some structured signal.',
   run(ctx) {

@@ -113,4 +113,77 @@ describe('runRules', () => {
     expect(report.categories.crawler.results).toHaveLength(1);
     expect(report.categories.crawler.results[0]?.id).toBe('a');
   });
+
+  it('populates schemaVersion, meta, and timing', async () => {
+    const rules = [
+      defineRule({
+        id: 'ok',
+        category: 'crawler',
+        weight: 1,
+        title: 'ok',
+        description: '',
+        run: () => ({ status: 'pass', score: 1, rationale: '' }),
+      }),
+    ];
+    const report = await runRules(fakeContext(), rules, { fetchMs: 42 });
+    expect(report.schemaVersion).toBe(1);
+    expect(report.meta.toolVersion).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(report.meta.nodeVersion).toBe(process.versions.node);
+    expect(report.timing.fetchMs).toBe(42);
+    expect(report.timing.auditMs).toBeGreaterThanOrEqual(0);
+    expect(report.timing.totalMs).toBeGreaterThanOrEqual(report.timing.auditMs);
+  });
+
+  it('propagates rule metadata onto results', async () => {
+    const rules = [
+      defineRule({
+        id: 'm',
+        stableId: 'stable.m',
+        category: 'crawler',
+        group: 'opportunity',
+        weight: 3,
+        impact: 'high',
+        effort: 'low',
+        docsUrl: 'https://example.com/docs',
+        title: 'meta',
+        description: '',
+        run: () => ({ status: 'warn', score: 0.5, rationale: 'x', estimatedImpact: 7 }),
+      }),
+    ];
+    const report = await runRules(fakeContext(), rules);
+    const r = report.categories.crawler.results[0]!;
+    expect(r.stableId).toBe('stable.m');
+    expect(r.group).toBe('opportunity');
+    expect(r.impact).toBe('high');
+    expect(r.effort).toBe('low');
+    expect(r.docsUrl).toBe('https://example.com/docs');
+    expect(r.estimatedImpact).toBe(7);
+    expect(r.durationMs).toBeGreaterThanOrEqual(0);
+  });
+
+  it('filters by stableId as well as id', async () => {
+    const rules = [
+      defineRule({
+        id: 'new.name',
+        stableId: 'legacy.a',
+        category: 'crawler',
+        weight: 1,
+        title: '',
+        description: '',
+        run: () => ({ status: 'pass', score: 1, rationale: '' }),
+      }),
+      defineRule({
+        id: 'new.other',
+        stableId: 'legacy.b',
+        category: 'crawler',
+        weight: 1,
+        title: '',
+        description: '',
+        run: () => ({ status: 'pass', score: 1, rationale: '' }),
+      }),
+    ];
+    const report = await runRules(fakeContext(), rules, { only: ['legacy.a'] });
+    expect(report.categories.crawler.results).toHaveLength(1);
+    expect(report.categories.crawler.results[0]?.stableId).toBe('legacy.a');
+  });
 });

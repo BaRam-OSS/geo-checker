@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const httpsRule = defineRule({
   id: 'crawler.https',
+  stableId: 'crawler.https',
   category: 'crawler',
+  group: 'diagnostic',
   weight: 2,
+  impact: 'critical',
+  effort: 'medium',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#crawlerhttps',
   title: 'Site is served over HTTPS',
   description: 'AI crawlers treat HTTPS pages as more trustworthy and some skip plain HTTP entirely.',
   run(ctx) {

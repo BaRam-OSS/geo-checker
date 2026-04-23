@@ -2,8 +2,13 @@ import { defineRule } from '../../types.js';
 
 export const sitemapPresentRule = defineRule({
   id: 'crawler.sitemap-present',
+  stableId: 'crawler.sitemap-present',
   category: 'crawler',
+  group: 'diagnostic',
   weight: 4,
+  impact: 'high',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#crawlersitemap-present',
   title: 'sitemap.xml is present',
   description: 'A sitemap helps AI crawlers discover and prioritise pages; many crawlers short-circuit discovery without one.',
   run(ctx) {

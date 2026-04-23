@@ -13,8 +13,13 @@ const AI_BOTS = [
 
 export const robotsAiAllowRule = defineRule({
   id: 'crawler.robots-ai-allow',
+  stableId: 'crawler.robots-ai-allow',
   category: 'crawler',
+  group: 'diagnostic',
   weight: 5,
+  impact: 'critical',
+  effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#crawlerrobots-ai-allow',
   title: 'AI crawlers are allowed',
   description: 'Major AI search crawlers (GPTBot, Google-Extended, ClaudeBot, PerplexityBot, CCBot, Amazonbot) must be allowed to index the homepage.',
   run(ctx) {

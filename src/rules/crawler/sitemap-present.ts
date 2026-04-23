@@ -18,7 +18,7 @@ export const sitemapPresentRule = defineRule({
       status: 'warn',
       score: 0.2,
       rationale: 'No sitemap.xml found (checked /sitemap.xml and Sitemap: directive in robots.txt).',
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/crawler.sitemap-present.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

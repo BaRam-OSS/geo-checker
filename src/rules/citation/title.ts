@@ -13,7 +13,7 @@ export const titleRule = defineRule({
         status: 'fail',
         score: 0,
         rationale: 'Page has no <title>.',
-        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cit.title.md',
+        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
       };
     }
     if (title.length < 10) {

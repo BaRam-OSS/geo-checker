@@ -19,7 +19,7 @@ export const twitterCardRule = defineRule({
       status: 'warn',
       score: 0,
       rationale: 'No twitter:card metadata.',
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cit.twitter-card.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

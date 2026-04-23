@@ -44,7 +44,7 @@ export const requiredFieldsRule = defineRule({
       score: Math.max(0, 1 - missing.length / (checked.length * 2)),
       rationale: `Missing required fields: ${msg}.`,
       evidence: missing,
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/sd.required-fields.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

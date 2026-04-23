@@ -14,7 +14,7 @@ export const robotsReachableRule = defineRule({
       status: 'warn',
       score: 0.3,
       rationale: 'robots.txt is missing. Add one even if empty to explicitly signal crawl policy.',
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/crawler.robots-reachable.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

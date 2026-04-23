@@ -44,7 +44,7 @@ export const robotsAiAllowRule = defineRule({
         score: 0,
         rationale: `Blocked: ${blocked.join(', ')}. Remove the Disallow or add an explicit Allow for these user-agents.`,
         evidence: { blocked, mentioned },
-        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/crawler.robots-ai-allow.md',
+        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
       };
     }
     if (mentioned.length === 0) {

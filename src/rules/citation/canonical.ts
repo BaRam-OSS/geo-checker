@@ -13,7 +13,7 @@ export const canonicalRule = defineRule({
         status: 'warn',
         score: 0,
         rationale: 'No <link rel="canonical"> found.',
-        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cit.canonical.md',
+        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
       };
     }
     try {

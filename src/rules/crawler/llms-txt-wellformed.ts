@@ -24,7 +24,7 @@ export const llmsTxtWellformedRule = defineRule({
       status: 'warn',
       score: 0.3,
       rationale: `llms.txt does not fully match the spec: ${check.reason}.`,
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/crawler.llms-txt-wellformed.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

@@ -29,7 +29,7 @@ export const headingHierarchyRule = defineRule({
       status: 'warn',
       score: Math.max(0.3, 1 - skips.length / levels.length),
       rationale: `${skips.length} heading skip(s) detected (e.g. h${skips[0]!.from}→h${skips[0]!.to}).`,
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cnt.heading-hierarchy.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

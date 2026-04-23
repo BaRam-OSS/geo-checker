@@ -18,7 +18,7 @@ export const wordCountRule = defineRule({
       status: 'fail',
       score: 0,
       rationale: `Only ${words} words; too thin to be cited.`,
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cnt.word-count.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

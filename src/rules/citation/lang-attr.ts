@@ -13,7 +13,7 @@ export const langAttrRule = defineRule({
         status: 'warn',
         score: 0,
         rationale: 'No lang attribute on <html>.',
-        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cit.lang-attr.md',
+        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
       };
     }
     return { status: 'pass', score: 1, rationale: `lang="${lang}".` };

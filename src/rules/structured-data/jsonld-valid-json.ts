@@ -16,7 +16,7 @@ export const jsonLdValidJsonRule = defineRule({
         status: 'fail',
         score: 0,
         rationale: 'One or more JSON-LD blocks failed to parse.',
-        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/sd.jsonld-valid-json.md',
+        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
       };
     }
     return { status: 'pass', score: 1, rationale: 'All JSON-LD blocks parse cleanly.' };

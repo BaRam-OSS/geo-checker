@@ -29,7 +29,7 @@ export const tldrOrFaqRule = defineRule({
       status: 'warn',
       score: 0,
       rationale: 'No TL;DR / summary / FAQ found; add one to boost AI citation odds.',
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cnt.tldr-or-faq.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

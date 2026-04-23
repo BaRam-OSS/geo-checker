@@ -25,7 +25,7 @@ export const authorVisibleRule = defineRule({
       status: 'warn',
       score: 0,
       rationale: 'No author signal found (JSON-LD, meta, rel, or .author).',
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cit.author-visible.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

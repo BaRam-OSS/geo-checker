@@ -22,7 +22,7 @@ export const ogTagsRule = defineRule({
       status: missing.length === REQUIRED.length ? 'fail' : 'warn',
       score: ratio,
       rationale: `Missing: ${missing.join(', ')}.`,
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cit.og-tags.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

@@ -13,7 +13,7 @@ export const metaDescriptionRule = defineRule({
         status: 'warn',
         score: 0,
         rationale: 'No meta description set.',
-        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cit.meta-description.md',
+        fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
       };
     }
     if (desc.length < 50) {

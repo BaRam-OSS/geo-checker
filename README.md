@@ -56,7 +56,7 @@ console.log(report.categories.crawler); // { score: 92, results: [...] }
 | **Citation Signals** | title, meta description, canonical, Open Graph, Twitter Card, author, publish/modified dates, `lang` | 25 |
 | **Content Structure** | single H1, heading hierarchy, image alt coverage, TL;DR/FAQ blocks, word count | 20 |
 
-See [`docs/rules/`](./docs/rules/) for every individual rule and how to fix it.
+See [`docs/rules.md`](./docs/rules.md) for every individual rule and how to fix a failure.
 
 ## Extensibility
 

@@ -32,7 +32,7 @@ export const schemaTypeRecognizedRule = defineRule({
       status: 'warn',
       score: 0.3,
       rationale: `No recognised schema.org types. Saw: ${[...seenTypes].join(', ') || '(none)'}.`,
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/sd.schema-type-recognized.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

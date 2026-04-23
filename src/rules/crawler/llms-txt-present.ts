@@ -14,7 +14,7 @@ export const llmsTxtPresentRule = defineRule({
       status: 'warn',
       score: 0,
       rationale: 'No /llms.txt found. Add one to curate the pages AI assistants should read.',
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/crawler.llms-txt-present.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

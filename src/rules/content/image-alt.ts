@@ -24,7 +24,7 @@ export const imageAltRule = defineRule({
       status: 'warn',
       score: ratio,
       rationale: `Only ${withAlt}/${total} images have alt text (${Math.round(ratio * 100)}%). Aim for ≥80%.`,
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cnt.image-alt.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

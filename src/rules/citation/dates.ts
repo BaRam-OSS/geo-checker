@@ -25,7 +25,7 @@ export const datesRule = defineRule({
       status: 'warn',
       score: 0,
       rationale: 'No publish date found (JSON-LD, meta article:published_time, or <time datetime>).',
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/cit.dates.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

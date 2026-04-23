@@ -23,7 +23,7 @@ export const microdataFallbackRule = defineRule({
       status: 'fail',
       score: 0,
       rationale: 'No structured data at all (no JSON-LD, no microdata, no RDFa).',
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/sd.microdata-fallback.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

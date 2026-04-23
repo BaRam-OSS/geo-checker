@@ -27,7 +27,7 @@ export const noDuplicateTypesRule = defineRule({
       status: 'warn',
       score: 0.4,
       rationale: `Duplicate primary types: ${dupes.map(([t, n]) => `${t}×${n}`).join(', ')}.`,
-      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules/sd.no-duplicate-types.md',
+      fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },
 });

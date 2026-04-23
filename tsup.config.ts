@@ -10,4 +10,5 @@ export default defineConfig({
   target: 'node18',
   shims: true,
   minify: false,
+  external: ['playwright', 'playwright-core'],
 });

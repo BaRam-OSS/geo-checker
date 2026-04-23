@@ -54,6 +54,11 @@ export function toCli(report: AuditReport): string {
   lines.push(kleur.bold('Overall ') + colorScore(report.overall) + kleur.gray(' / 100'));
   lines.push('');
 
+  for (const w of report.warnings) {
+    lines.push(kleur.yellow('!  ') + w);
+  }
+  if (report.warnings.length > 0) lines.push('');
+
   for (const cat of Object.keys(report.categories) as Category[]) {
     const b = report.categories[cat];
     if (b.results.length === 0) continue;

@@ -75,6 +75,7 @@ export async function runRules(
     renderMode: ctx.renderMode,
     overall,
     categories: buckets,
+    warnings: [...ctx.warnings],
     version: VERSION,
   };
 }

@@ -52,6 +52,7 @@ export interface AuditContext {
   jsonLd: unknown[];
   renderMode: 'static' | 'rendered';
   fetchedAt: string;
+  warnings: string[];
 }
 
 export interface RuleResult {
@@ -84,6 +85,7 @@ export interface AuditReport {
   renderMode: 'static' | 'rendered';
   overall: number;
   categories: Record<Category, CategoryReport>;
+  warnings: string[];
   version: string;
 }
 

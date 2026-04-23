@@ -24,6 +24,7 @@ function makeCtx(overrides: Partial<AuditContext> = {}): AuditContext {
     jsonLd: [],
     renderMode: 'static',
     fetchedAt: '2026-04-23T00:00:00.000Z',
+    warnings: [],
     ...overrides,
   };
 }

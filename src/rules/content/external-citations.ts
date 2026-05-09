@@ -10,6 +10,7 @@ export const externalCitationsRule = defineRule({
   effort: 'medium',
   docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#cntexternal-citations',
   title: 'Content cites external sources',
+  title_ko: '외부 출처 인용 여부',
   description:
     'Outbound links to authoritative external sources are an E-E-A-T trust signal. AI engines treat well-cited pages as more credible.',
   run(ctx) {
@@ -17,7 +18,7 @@ export const externalCitationsRule = defineRule({
     try {
       host = new URL(ctx.finalUrl).hostname.toLowerCase();
     } catch {
-      return { status: 'skip', score: 0, rationale: 'Invalid finalUrl.' };
+      return { status: 'skip', score: 0, rationale: 'Invalid finalUrl.', rationale_ko: '유효하지 않은 finalUrl입니다.' };
     }
     const seen = new Set<string>();
     ctx.$('main a[href], article a[href], body a[href]').each((_i, el) => {
@@ -42,6 +43,7 @@ export const externalCitationsRule = defineRule({
         status: 'pass',
         score: 1,
         rationale: `${count} distinct external host(s) cited (excluding nofollow).`,
+        rationale_ko: `외부 사이트 ${count}개를 인용합니다 (nofollow 제외).`,
         evidence: { hosts: [...seen].slice(0, 8) },
       };
     }
@@ -50,6 +52,7 @@ export const externalCitationsRule = defineRule({
         status: 'pass',
         score: 0.7,
         rationale: `${count} external host(s) cited. Aim for ≥3 for stronger E-E-A-T.`,
+        rationale_ko: `외부 사이트 ${count}개를 인용합니다. E-E-A-T 강화를 위해 3개 이상을 목표로 하세요.`,
         evidence: { hosts: [...seen] },
         estimatedImpact: 1,
       };
@@ -58,6 +61,7 @@ export const externalCitationsRule = defineRule({
       status: 'warn',
       score: 0,
       rationale: 'No external follow citations found in main content.',
+      rationale_ko: '본문에 외부 출처 링크가 없습니다.',
       fixHint: 'Cite at least one authoritative external source (research paper, official docs, news outlet).',
       estimatedImpact: 2,
     };

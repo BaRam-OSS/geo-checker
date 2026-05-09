@@ -11,10 +11,11 @@ export const llmsTxtWellformedRule = defineRule({
   effort: 'low',
   docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#crawlerllms-txt-wellformed',
   title: 'llms.txt follows the spec',
+  title_ko: 'llms.txt 스펙 준수 여부',
   description: 'Must start with an H1 project title, then a brief summary, then at least one H2 section containing link items.',
   run(ctx) {
     if (!ctx.llmsTxt) {
-      return { status: 'skip', score: 0, rationale: 'No llms.txt to validate.' };
+      return { status: 'skip', score: 0, rationale: 'No llms.txt to validate.', rationale_ko: '검증할 llms.txt가 없습니다.' };
     }
     const check = isLlmsTxtWellFormed(ctx.llmsTxt);
     if (check.ok) {
@@ -23,12 +24,14 @@ export const llmsTxtWellformedRule = defineRule({
         status: 'pass',
         score: 1,
         rationale: `Well-formed with ${ctx.llmsTxt.sections.length} section(s) and ${totalLinks} link(s).`,
+        rationale_ko: `스펙에 맞게 작성됨 (섹션 ${ctx.llmsTxt.sections.length}개, 링크 ${totalLinks}개).`,
       };
     }
     return {
       status: 'warn',
       score: 0.3,
       rationale: `llms.txt does not fully match the spec: ${check.reason}.`,
+      rationale_ko: `llms.txt가 스펙을 완전히 따르지 않습니다: ${check.reason}.`,
       fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },

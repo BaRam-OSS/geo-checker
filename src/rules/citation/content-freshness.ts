@@ -25,6 +25,7 @@ export const contentFreshnessRule = defineRule({
   effort: 'low',
   docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#citcontent-freshness',
   title: 'Article content is fresh (dateModified within 1 year)',
+  title_ko: '콘텐츠 최신성 (dateModified 1년 이내)',
   description:
     'AI engines down-rank stale content. Surface a recent dateModified (≤365 days) on Article-like pages so retrieval rankings stay strong.',
   run(ctx) {
@@ -35,6 +36,7 @@ export const contentFreshnessRule = defineRule({
         status: 'skip',
         score: 0,
         rationale: 'No Article/BlogPosting/NewsArticle JSON-LD; freshness signal not applicable.',
+        rationale_ko: 'Article/BlogPosting/NewsArticle JSON-LD가 없어 최신성 신호를 확인할 수 없습니다.',
       };
     }
     let bestMs: number | null = null;
@@ -56,6 +58,7 @@ export const contentFreshnessRule = defineRule({
         status: 'warn',
         score: 0,
         rationale: 'Article has no parseable dateModified or datePublished.',
+        rationale_ko: 'Article JSON-LD에 파싱 가능한 dateModified 또는 datePublished가 없습니다.',
         fixHint: 'Add ISO-8601 dateModified and datePublished to your Article JSON-LD.',
         estimatedImpact: 3,
       };
@@ -66,6 +69,7 @@ export const contentFreshnessRule = defineRule({
         status: 'pass',
         score: 1,
         rationale: `${usedField} within the last year (~${ageDays} day${ageDays === 1 ? '' : 's'} ago).`,
+        rationale_ko: `${usedField}이 1년 이내입니다 (약 ${ageDays}일 전).`,
         evidence: { ageDays, field: usedField },
       };
     }
@@ -74,6 +78,7 @@ export const contentFreshnessRule = defineRule({
         status: 'warn',
         score: 0.6,
         rationale: `${usedField} is ${ageDays} days old. Refresh within a year for best AI ranking.`,
+        rationale_ko: `${usedField}이 ${ageDays}일 됐습니다. AI 순위를 유지하려면 1년 이내로 갱신하세요.`,
         evidence: { ageDays, field: usedField },
         estimatedImpact: 2,
       };
@@ -82,6 +87,7 @@ export const contentFreshnessRule = defineRule({
       status: 'warn',
       score: 0.2,
       rationale: `${usedField} is ${ageDays} days old (>2 years). AI engines treat this as stale.`,
+      rationale_ko: `${usedField}이 ${ageDays}일 됐습니다 (2년 초과). AI 엔진이 오래된 콘텐츠로 간주합니다.`,
       evidence: { ageDays, field: usedField },
       fixHint: 'Update content and bump dateModified to today\'s date.',
       estimatedImpact: 3,

@@ -31,16 +31,17 @@ export const breadcrumbValidRule = defineRule({
   effort: 'medium',
   docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#sdbreadcrumb-valid',
   title: 'BreadcrumbList items declare position, name, and item',
+  title_ko: 'BreadcrumbList 항목의 필수 필드 충족 여부',
   description:
     'When BreadcrumbList JSON-LD is present, every itemListElement should set position (1-indexed), name, and item (URL) — otherwise AI engines cannot reconstruct the path.',
   run(ctx) {
     if (ctx.jsonLd.length === 0) {
-      return { status: 'skip', score: 0, rationale: 'No JSON-LD to analyse.' };
+      return { status: 'skip', score: 0, rationale: 'No JSON-LD to analyse.', rationale_ko: '분석할 JSON-LD가 없습니다.' };
     }
     const nodes = flattenJsonLd(ctx.jsonLd);
     const breadcrumbs = nodes.filter((n) => getTypes(n).includes('BreadcrumbList'));
     if (breadcrumbs.length === 0) {
-      return { status: 'skip', score: 0, rationale: 'No BreadcrumbList present.' };
+      return { status: 'skip', score: 0, rationale: 'No BreadcrumbList present.', rationale_ko: 'BreadcrumbList가 없습니다.' };
     }
     const allIssues: ItemListIssue[] = [];
     let totalItems = 0;
@@ -54,6 +55,7 @@ export const breadcrumbValidRule = defineRule({
         status: 'pass',
         score: 1,
         rationale: `BreadcrumbList(s) valid (${totalItems} items).`,
+        rationale_ko: `BreadcrumbList가 유효합니다 (항목 ${totalItems}개).`,
       };
     }
     const fatalCount = allIssues.length;
@@ -63,6 +65,7 @@ export const breadcrumbValidRule = defineRule({
       status: score < 0.5 ? 'fail' : 'warn',
       score,
       rationale: `${fatalCount} breadcrumb item(s) missing required fields.`,
+      rationale_ko: `breadcrumb 항목 ${fatalCount}개에 필수 필드가 없습니다.`,
       evidence: allIssues.slice(0, 5),
       fixHint: 'Each itemListElement needs { "@type": "ListItem", position: N, name, item }.',
       estimatedImpact: Math.round(2 * (1 - score)),

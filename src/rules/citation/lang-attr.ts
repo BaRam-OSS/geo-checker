@@ -10,6 +10,7 @@ export const langAttrRule = defineRule({
   effort: 'low',
   docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#citlang-attr',
   title: '<html lang> is set',
+  title_ko: '<html lang> 속성 설정 여부',
   description: 'A lang attribute helps AI engines route the page to the right-language search surface (and helps screen readers).',
   run(ctx) {
     const lang = ctx.$('html').attr('lang')?.trim();
@@ -18,9 +19,10 @@ export const langAttrRule = defineRule({
         status: 'warn',
         score: 0,
         rationale: 'No lang attribute on <html>.',
+        rationale_ko: '<html>에 lang 속성이 없습니다.',
         fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
       };
     }
-    return { status: 'pass', score: 1, rationale: `lang="${lang}".` };
+    return { status: 'pass', score: 1, rationale: `lang="${lang}".`, rationale_ko: `lang="${lang}".` };
   },
 });

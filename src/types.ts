@@ -71,6 +71,7 @@ export interface RuleResult {
   status: Status;
   score: number;
   rationale: string;
+  rationale_ko?: string;
   evidence?: unknown;
   locations?: EvidenceLocation[];
   fixUrl?: string;
@@ -87,6 +88,7 @@ export interface Rule {
   impact?: Impact;
   effort?: Effort;
   title: string;
+  title_ko?: string;
   description: string;
   docsUrl?: string;
   run(ctx: AuditContext): Promise<RuleResult> | RuleResult;
@@ -96,6 +98,7 @@ export interface RuleResultEntry extends RuleResult {
   id: string;
   stableId?: string;
   title: string;
+  title_ko?: string;
   weight: number;
   group?: RuleGroup;
   impact?: Impact;

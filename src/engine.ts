@@ -63,6 +63,7 @@ export async function runRules(
       durationMs,
     };
     if (rule.stableId !== undefined) entry.stableId = rule.stableId;
+    if (rule.title_ko !== undefined) entry.title_ko = rule.title_ko;
     if (rule.group !== undefined) entry.group = rule.group;
     if (rule.impact !== undefined) entry.impact = rule.impact;
     if (rule.effort !== undefined) entry.effort = rule.effort;

@@ -13,10 +13,11 @@ export const noDuplicateTypesRule = defineRule({
   effort: 'low',
   docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#sdno-duplicate-types',
   title: 'No conflicting duplicate @types',
+  title_ko: '@type 중복 충돌 없음',
   description: 'Multiple competing entities of the same primary type (e.g. two Articles) confuse the engine about which one represents the page.',
   run(ctx) {
     if (ctx.jsonLd.length === 0) {
-      return { status: 'skip', score: 0, rationale: 'No JSON-LD to analyse.' };
+      return { status: 'skip', score: 0, rationale: 'No JSON-LD to analyse.', rationale_ko: '분석할 JSON-LD가 없습니다.' };
     }
     const counts = new Map<string, number>();
     for (const node of flattenJsonLd(ctx.jsonLd)) {
@@ -26,12 +27,13 @@ export const noDuplicateTypesRule = defineRule({
     }
     const dupes = [...counts.entries()].filter(([, n]) => n > 1);
     if (dupes.length === 0) {
-      return { status: 'pass', score: 1, rationale: 'No duplicate primary types.' };
+      return { status: 'pass', score: 1, rationale: 'No duplicate primary types.', rationale_ko: '중복된 기본 타입이 없습니다.' };
     }
     return {
       status: 'warn',
       score: 0.4,
       rationale: `Duplicate primary types: ${dupes.map(([t, n]) => `${t}×${n}`).join(', ')}.`,
+      rationale_ko: `중복된 기본 타입: ${dupes.map(([t, n]) => `${t}×${n}`).join(', ')}.`,
       fixUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md',
     };
   },

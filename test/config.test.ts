@@ -59,7 +59,7 @@ describe('applyConfig', () => {
   it('returns defaults when config missing', () => {
     const r = applyConfig(rules, undefined);
     expect(r.rules).toHaveLength(3);
-    expect(r.categoryWeights.crawler).toBe(25);
+    expect(r.categoryWeights.crawler).toBe(20);
   });
 
   it('disables rules by stableId', () => {
@@ -81,12 +81,12 @@ describe('applyConfig', () => {
   it('overrides category weights', () => {
     const r = applyConfig(rules, { categories: { crawler: { weight: 50 } } });
     expect(r.categoryWeights.crawler).toBe(50);
-    expect(r.categoryWeights['structured-data']).toBe(30);
+    expect(r.categoryWeights['structured-data']).toBe(25);
   });
 
   it('ignores zero/negative weights', () => {
     const r = applyConfig(rules, { rules: { a: { weight: 0 } }, categories: { crawler: { weight: -1 } } });
     expect(r.rules.find((x) => x.id === 'a')?.weight).toBe(1);
-    expect(r.categoryWeights.crawler).toBe(25);
+    expect(r.categoryWeights.crawler).toBe(20);
   });
 });

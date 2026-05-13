@@ -7,6 +7,7 @@ const CATEGORY_LABELS: Record<Category, string> = {
   'structured-data': 'Structured Data',
   citation: 'Citation Signals',
   content: 'Content Structure',
+  aeo: 'AEO Stack',
 };
 
 function colorScore(score: number): string {

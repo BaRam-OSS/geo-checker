@@ -12,6 +12,7 @@ const CATEGORY_LABELS: Record<Category, string> = {
   'structured-data': 'Structured Data',
   citation: 'Citation Signals',
   content: 'Content Structure',
+  aeo: 'AEO Stack',
 };
 
 const IMPACT_ORDER: Record<Impact, number> = {
@@ -121,12 +122,14 @@ function partitionResults(report: AuditReport): {
     'structured-data': [],
     citation: [],
     content: [],
+    aeo: [],
   };
   const passed: Record<Category, RuleResultEntry[]> = {
     crawler: [],
     'structured-data': [],
     citation: [],
     content: [],
+    aeo: [],
   };
   for (const cat of Object.keys(report.categories) as Category[]) {
     for (const r of report.categories[cat].results) {

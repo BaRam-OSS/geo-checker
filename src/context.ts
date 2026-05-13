@@ -68,10 +68,12 @@ export async function buildContext(url: string, opts: BuildContextOptions = {}):
     );
   }
 
-  const [robotsRaw, llmsRaw, llmsFullRaw] = await Promise.all([
+  const [robotsRaw, llmsRaw, llmsFullRaw, skillMdRaw, agentPermissionsRaw] = await Promise.all([
     fetchText(`${origin}/robots.txt`, opts),
     fetchText(`${origin}/llms.txt`, opts),
     fetchText(`${origin}/llms-full.txt`, opts),
+    fetchText(`${origin}/skill.md`, opts),
+    fetchText(`${origin}/agent-permissions.json`, opts),
   ]);
 
   let sitemapUrl: string | null = null;
@@ -81,6 +83,11 @@ export async function buildContext(url: string, opts: BuildContextOptions = {}):
 
   const sitemapRaw = await fetchText(sitemapUrl, opts);
   const sitemap = sitemapRaw ? parseSitemap(sitemapRaw) : null;
+
+  let agentPermissions: unknown | null = null;
+  if (agentPermissionsRaw && agentPermissionsRaw.trim().length > 0) {
+    try { agentPermissions = JSON.parse(agentPermissionsRaw); } catch { /* invalid JSON */ }
+  }
 
   return {
     url,
@@ -97,6 +104,8 @@ export async function buildContext(url: string, opts: BuildContextOptions = {}):
     renderMode,
     fetchedAt: new Date().toISOString(),
     warnings,
+    skillMd: skillMdRaw && skillMdRaw.trim().length > 0 ? skillMdRaw : null,
+    agentPermissions,
   };
 }
 

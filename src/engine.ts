@@ -36,6 +36,7 @@ export async function runRules(
     'structured-data': { score: 0, weight: weights['structured-data'], results: [] },
     citation: { score: 0, weight: weights.citation, results: [] },
     content: { score: 0, weight: weights.content, results: [] },
+    aeo: { score: 0, weight: weights.aeo, results: [] },
   };
 
   for (const rule of rules) {

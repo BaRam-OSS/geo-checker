@@ -2,7 +2,7 @@ import type { CheerioAPI } from 'cheerio';
 
 export type Status = 'pass' | 'warn' | 'fail' | 'skip';
 
-export type Category = 'crawler' | 'structured-data' | 'citation' | 'content';
+export type Category = 'crawler' | 'structured-data' | 'citation' | 'content' | 'aeo';
 
 export interface RobotsRuleGroup {
   userAgent: string;
@@ -54,6 +54,8 @@ export interface AuditContext {
   renderMode: 'static' | 'rendered';
   fetchedAt: string;
   warnings: string[];
+  skillMd: string | null;
+  agentPermissions: unknown | null;
 }
 
 export type Impact = 'critical' | 'high' | 'medium' | 'low';
@@ -172,4 +174,5 @@ export const CATEGORY_WEIGHTS: Record<Category, number> = {
   'structured-data': 30,
   citation: 25,
   content: 20,
+  aeo: 20,
 };

@@ -11,6 +11,7 @@ export const aeoTokenLengthRule = defineRule({
   weight: 4,
   impact: 'medium',
   effort: 'medium',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#aeotoken-length',
   title: 'Content token length within AI agent limits',
   title_ko: '콘텐츠 토큰 수 AI 에이전트 권장 범위',
   description: 'Pages under 15K tokens are optimal for AI agents (per Addy Osmani\'s AEO guidance).',

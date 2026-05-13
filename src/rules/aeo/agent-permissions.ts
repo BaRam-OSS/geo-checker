@@ -8,6 +8,7 @@ export const aeoAgentPermissionsRule = defineRule({
   weight: 3,
   impact: 'medium',
   effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#aeoagent-permissions',
   title: 'agent-permissions.json is present',
   title_ko: 'agent-permissions.json 파일 존재 여부',
   description: 'Declares explicit read/summarize/cite/train permissions for AI agents.',

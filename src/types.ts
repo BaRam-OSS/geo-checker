@@ -170,9 +170,9 @@ export function defineRule(rule: Rule): Rule {
 }
 
 export const CATEGORY_WEIGHTS: Record<Category, number> = {
-  crawler: 25,
-  'structured-data': 30,
-  citation: 25,
-  content: 20,
+  crawler: 20,
+  'structured-data': 25,
+  citation: 20,
+  content: 15,
   aeo: 20,
 };

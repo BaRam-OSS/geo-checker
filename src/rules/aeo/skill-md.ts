@@ -8,6 +8,7 @@ export const aeoSkillMdRule = defineRule({
   weight: 3,
   impact: 'high',
   effort: 'low',
+  docsUrl: 'https://github.com/BaRam-OSS/geo-checker/blob/main/docs/rules.md#aeoskill-md',
   title: 'skill.md is present',
   title_ko: 'skill.md 파일 존재 여부',
   description: 'A /skill.md file describes site capabilities so AI agents know what this site can do for them.',

@@ -70,8 +70,9 @@ function makeReport(overrides: Partial<AuditReport> = {}): AuditReport {
           },
         ],
       },
-      citation: { score: 90, weight: 25, results: [] },
-      content: { score: 70, weight: 20, results: [] },
+      citation: { score: 90, weight: 20, results: [] },
+      content: { score: 70, weight: 15, results: [] },
+      aeo: { score: 0, weight: 20, results: [] },
     },
     ...overrides,
   };
@@ -145,5 +146,32 @@ describe('HTML reporter', () => {
   it('shows warnings when present', () => {
     const html = toHtml(makeReport());
     expect(html).toContain('JS-rendered');
+  });
+
+  it('adds copy-prompt button for fail and warn audits', () => {
+    const $ = load(toHtml(makeReport()));
+    expect($('.copy-prompt-btn').length).toBe(2); // sitemap-present(fail) + required-fields(warn)
+  });
+
+  it('does not add copy-prompt button for pass audits', () => {
+    const passOnly = makeReport({
+      categories: {
+        crawler: { score: 100, weight: 20, results: [{ id: 'crawler.https', stableId: 'crawler.https', title: 'HTTPS', weight: 2, status: 'pass', score: 1, rationale: 'OK', impact: 'critical', effort: 'low', group: 'diagnostic', docsUrl: 'https://example.com/docs' }] },
+        'structured-data': { score: 100, weight: 25, results: [] },
+        citation: { score: 100, weight: 20, results: [] },
+        content: { score: 100, weight: 15, results: [] },
+        aeo: { score: 100, weight: 20, results: [] },
+      },
+    });
+    const $ = load(toHtml(passOnly));
+    expect($('.copy-prompt-btn').length).toBe(0);
+  });
+
+  it('copy-prompt data-prompt contains rule title, rationale and GEO intro', () => {
+    const $ = load(toHtml(makeReport()));
+    const promptAttr = $('.copy-prompt-btn').first().attr('data-prompt') ?? '';
+    expect(promptAttr).toContain('GEO/AEO');
+    expect(promptAttr).toContain('Required fields');
+    expect(promptAttr).toContain('Missing datePublished.');
   });
 });

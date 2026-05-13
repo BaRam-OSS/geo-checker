@@ -83,6 +83,21 @@ function locationBlock(locations?: EvidenceLocation[]): string {
   return `<ul class="locations">${items}</ul>`;
 }
 
+function buildPrompt(r: RuleResultEntry): string {
+  const lines = [
+    `I'm improving my website's GEO/AEO (Generative Engine Optimization) score.`,
+    ``,
+    `Issue: ${r.title}`,
+    `Rule ID: ${r.stableId ?? r.id}`,
+    `Status: ${r.status}`,
+    `Problem: ${r.rationale}`,
+  ];
+  if (r.fixHint) lines.push(`Suggested fix: ${r.fixHint}`);
+  if (r.docsUrl) lines.push(`Reference: ${r.docsUrl}`);
+  lines.push(``, `Please give me specific steps or code to resolve this issue.`);
+  return lines.join('\n');
+}
+
 function auditRow(r: RuleResultEntry): string {
   const impact = impactChip(r.impact);
   const effort = effortChip(r.effort);
@@ -94,6 +109,10 @@ function auditRow(r: RuleResultEntry): string {
     ? `<a class="docs" href="${esc(r.docsUrl)}" target="_blank" rel="noopener">docs ↗</a>`
     : '';
   const fixHint = r.fixHint ? `<div class="fix-hint">${esc(r.fixHint)}</div>` : '';
+  const copyBtn =
+    r.status === 'fail' || r.status === 'warn'
+      ? `<button class="copy-prompt-btn" type="button" data-prompt="${esc(buildPrompt(r))}">Copy AI prompt</button>`
+      : '';
   const id = esc(r.stableId ?? r.id);
   const score = Math.round(r.score * 100);
   return `<div class="audit audit-${r.status}" data-stable-id="${id}">
@@ -107,6 +126,7 @@ function auditRow(r: RuleResultEntry): string {
     <div class="audit-id"><code>${id}</code> · weight ${r.weight}${r.durationMs !== undefined ? ` · ${r.durationMs}ms` : ''}</div>
     <div class="audit-rationale">${esc(r.rationale)}</div>
     ${fixHint}
+    ${copyBtn}
     ${locationBlock(r.locations)}
   </div>`;
 }
@@ -341,6 +361,12 @@ details[open] > summary::before { content: "▾ "; }
 .audit-id code { background: transparent; color: var(--fg-dim); }
 .audit-rationale { margin-top: 8px; color: var(--fg); }
 .fix-hint { margin-top: 6px; color: var(--accent); font-size: 13px; }
+.copy-prompt-btn {
+  margin-top: 8px; background: transparent; cursor: pointer; display: inline-block;
+  border: 1px solid var(--border); color: var(--fg-dim); font: inherit;
+  font-size: 11px; padding: 3px 10px; border-radius: 5px;
+}
+.copy-prompt-btn:hover { border-color: var(--accent); color: var(--accent); }
 .docs { color: var(--accent); text-decoration: none; font-size: 12px; margin-left: auto; }
 .docs:hover { text-decoration: underline; }
 
@@ -396,6 +422,63 @@ const SCRIPT = `
     }
   });
 })();
+(function () {
+  var reportEl = document.getElementById('geo-report-data');
+  var siteUrl = '';
+  if (reportEl) { try { siteUrl = JSON.parse(reportEl.textContent || '').finalUrl || ''; } catch (e) {} }
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var btn = t && typeof t.closest === 'function' ? t.closest('.copy-prompt-btn') : null;
+    if (!btn) return;
+    var text = (siteUrl ? 'URL: ' + siteUrl + '\\n\\n' : '') + (btn.getAttribute('data-prompt') || '');
+    copyText(btn, text, 'Copy AI prompt');
+  });
+  function copyText(btn, text, label) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { flash(btn, label); }).catch(function () { fallback(btn, text, label); });
+    } else { fallback(btn, text, label); }
+  }
+  function fallback(btn, text, label) {
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); try { document.execCommand('copy'); } catch (ex) {}
+    document.body.removeChild(ta);
+    flash(btn, label);
+  }
+  function flash(btn, label) {
+    btn.textContent = 'Copied ✓';
+    setTimeout(function () { btn.textContent = label; }, 1200);
+  }
+})();
+(function () {
+  var btn = document.getElementById('copy-all-issues');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var reportEl = document.getElementById('geo-report-data');
+    var siteUrl = '';
+    if (reportEl) { try { siteUrl = JSON.parse(reportEl.textContent || '').finalUrl || ''; } catch (e) {} }
+    var prompts = Array.from(document.querySelectorAll('.copy-prompt-btn'))
+      .map(function (el, i) { return (i + 1) + '. ' + (el.getAttribute('data-prompt') || ''); });
+    if (prompts.length === 0) {
+      btn.textContent = 'No issues ✓';
+      setTimeout(function () { btn.textContent = 'Copy All Issues'; }, 1200);
+      return;
+    }
+    var header = 'GEO/AEO Audit Issues' + (siteUrl ? ' for ' + siteUrl : '') + '\\n\\n';
+    var text = header + prompts.join('\\n\\n---\\n\\n');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { flash(); }).catch(function () { fallbackAll(text); });
+    } else { fallbackAll(text); }
+    function flash() { btn.textContent = 'Copied ✓'; setTimeout(function () { btn.textContent = 'Copy All Issues'; }, 1200); }
+    function fallbackAll(t) {
+      var ta = document.createElement('textarea');
+      ta.value = t; document.body.appendChild(ta);
+      ta.select(); try { document.execCommand('copy'); } catch (ex) {}
+      document.body.removeChild(ta);
+      flash();
+    }
+  });
+})();
 `;
 
 export function toHtml(report: AuditReport): string {
@@ -416,6 +499,7 @@ export function toHtml(report: AuditReport): string {
         </div>
       </div>
       <div class="hdr-actions">
+        <button class="btn" id="copy-all-issues" type="button">Copy All Issues</button>
         <button class="btn" id="copy-json" type="button">Copy JSON</button>
       </div>
     </header>

@@ -70,6 +70,11 @@ describe('full rule registry', () => {
   <section id="tldr"><p>TL;DR: make your site citation-ready.</p></section>
   <img src="a.png" alt="diagram"><img src="b.png" alt="diagram"><img src="c.png" alt="">
   <p>See the <a href="https://en.wikipedia.org/wiki/Generative_AI">Wikipedia entry</a>, the <a href="https://schema.org/Article">schema.org spec</a>, and the <a href="https://platform.openai.com/docs">OpenAI docs</a>.</p>
+  <!-- 0.5.0: 시점이 명시된 수치와 귀속된 인용문. 서베이가 가장 강한 레버로 보고한 두 가지라
+       "잘 만든 페이지" 픽스처가 이걸 갖추지 않으면 예시로서 맞지 않는다. -->
+  <p>In 2026, quotation addition produced a 41% relative gain in position-adjusted word count, according to the survey. Statistics addition reached a 25.2% share in the same 2026 benchmark, up 30.6% over baseline.</p>
+  <p>Alice Kim, a researcher on the project, said "the effect holds only when the number carries a date and a source", explaining why undated figures rarely get reused.</p>
+  <blockquote>Relevance and position dominate; formatting changes alone have weak effects.</blockquote>
   ${'<p>filler paragraph with many words that pad the body up to the required threshold easily</p>'.repeat(40)}
 </body></html>`;
     const robots = parseRobots(

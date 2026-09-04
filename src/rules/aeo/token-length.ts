@@ -1,5 +1,35 @@
 import { defineRule } from '../../types.js';
 
+/**
+ * 토큰 수 추정. 스크립트별로 문자당 토큰이 크게 달라 한 가지 계수로는 안 된다.
+ *
+ * 예전엔 `text.length / 3` 하나로 계산했는데, 한국어에서 심하게 빗나간다.
+ * 현대 BPE 토크나이저에서 한글은 대략 문자당 1~1.5 토큰이고 영문은 4~5 문자당
+ * 1 토큰이라, 한국어 문서의 토큰 수가 3~4배까지 과소평가됐다. 그 결과 실제로는
+ * 15K 를 훌쩍 넘는 한국어 페이지가 "권장 범위 이내" 로 통과했다.
+ *
+ * 정확한 값은 토크나이저를 돌려야 나오지만, 이 규칙의 목적은 "잘릴 만큼 긴가"를
+ * 가르는 것이므로 스크립트별 근사로 충분하다.
+ */
+export function estimateTokens(text: string): number {
+  let cjk = 0;
+  let other = 0;
+  for (const ch of text) {
+    const c = ch.codePointAt(0)!;
+    // 한글(음절·자모), CJK 통합한자, 가나
+    const isCjk =
+      (c >= 0xac00 && c <= 0xd7a3) ||
+      (c >= 0x1100 && c <= 0x11ff) ||
+      (c >= 0x3130 && c <= 0x318f) ||
+      (c >= 0x4e00 && c <= 0x9fff) ||
+      (c >= 0x3040 && c <= 0x30ff);
+    if (isCjk) cjk++;
+    else other++;
+  }
+  // 한글 1.2 토큰/자, 그 외 0.25 토큰/자(≈4자당 1토큰)
+  return Math.round(cjk * 1.2 + other * 0.25);
+}
+
 const THRESHOLD_OPTIMAL = 15_000;
 const THRESHOLD_MAX = 25_000;
 
@@ -17,7 +47,7 @@ export const aeoTokenLengthRule = defineRule({
   description: 'Pages under 15K tokens are optimal for AI agents (per Addy Osmani\'s AEO guidance).',
   run(ctx) {
     const text = ctx.$('body').text();
-    const tokenEstimate = Math.round(text.length / 3);
+    const tokenEstimate = estimateTokens(text);
     const evidence = { tokenEstimate, thresholds: { optimal: THRESHOLD_OPTIMAL, max: THRESHOLD_MAX } };
 
     if (tokenEstimate <= THRESHOLD_OPTIMAL) {

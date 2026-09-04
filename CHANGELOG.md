@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] — 2026-09-05
+
+The `content` category was entirely structural — H1 count, heading order, alt text, word count. The 2026 GEO survey ([arXiv 2607.14035](https://arxiv.org/abs/2607.14035)) classifies pure formatting changes as having **weak effects** ("Test headings, tables, and fields without assuming the direction of effect") while reporting extractable evidence as the strongest content-side lever. This release measures the evidence.
+
+### Added
+
+- `cnt.dated-statistics` (weight 4, high impact) — counts statistics that carry a **time reference in the same sentence**, and separately notes how many also name a source. Rationale: the survey requires evidence be "relevant, verifiable, **dated**, and properly attributed"; the original GEO paper (Aggarwal et al., KDD'24) reports Statistics Addition at a 25.2% position-adjusted word count share (+30.6% relative). Counting bare numbers would reward the fabricated-statistic failure mode the survey explicitly warns about, so an undated number does not count.
+- `cnt.quotations` (weight 3, high impact) — attributed quotations, counting both `<blockquote>` and quoted phrases (Korean pages routinely quote without `<blockquote>`). Rationale: quotation addition is the **largest single content-side effect** reported — ~41% relative gain in position-adjusted word count (27.2% vs 19.3%). Attribution is required, not optional: an unattributed quote is a sentence, not evidence.
+
+### Fixed
+
+- **`aeo.token-length` badly underestimated CJK.** It used `text.length / 3` for every script. Korean runs roughly 1–1.5 tokens per character under modern BPE tokenizers while English runs ~4 characters per token, so Korean pages were under-counted by 3–4× and pages well over the 15K limit passed as "within range". Now estimated per script.
+
+### Note
+
+Deliberately **not** added: more formatting rules. The survey's caution is explicit — "formatting changes alone have weak effects", and body-only optimization can *reduce* upstream retrieval (top-20 presence −9%, top-10 after reranking −16%). Adding structural checks would have made the score easier to game and less predictive.
+
 ## [0.4.0] — 2026-09-04
 
 Indexability first. Every check in this tool scores whatever HTML came back — but nothing verified that the HTML was the real page, or that the page was allowed to be indexed at all. A page declaring `noindex` could score 95.

@@ -10,7 +10,18 @@ import type {
 } from './types.js';
 import { CATEGORY_WEIGHTS } from './types.js';
 
-const VERSION = '0.3.0';
+// 버전을 여기 손으로 적어 두면 반드시 어긋난다. 실제로 0.3.1·0.3.2 를 배포하고도
+// 이 상수가 0.3.0 에 머물러, **저장된 리포트 전부가 0.3.0 으로 기록**됐다.
+// 어떤 룰셋이 만든 점수인지 데이터로 알 수 없게 되는 문제라 package.json 에서 읽는다.
+import { createRequire } from 'node:module';
+const VERSION: string = (() => {
+  try {
+    const require = createRequire(import.meta.url);
+    return require('../package.json').version as string;
+  } catch {
+    return '0.0.0-unknown';
+  }
+})();
 
 export interface RunRulesOptions {
   only?: string[];

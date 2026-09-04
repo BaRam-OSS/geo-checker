@@ -1,6 +1,17 @@
 import { request } from 'undici';
 
-export const DEFAULT_UA = 'geo-checker/0.1.0 (+https://github.com/BaRam-OSS/geo-checker)';
+// UA 도 0.1.0 으로 굳어 있었다. 대상 사이트 로그에 우리가 어떤 버전으로 다녀갔는지
+// 남아야 문의가 왔을 때 재현할 수 있다.
+import { createRequire as createRequireForUa } from 'node:module';
+const PKG_VERSION: string = (() => {
+  try {
+    return createRequireForUa(import.meta.url)('../../package.json').version as string;
+  } catch {
+    return '0.0.0-unknown';
+  }
+})();
+
+export const DEFAULT_UA = `geo-checker/${PKG_VERSION} (+https://github.com/BaRam-OSS/geo-checker)`;
 
 export interface StaticFetchOptions {
   userAgent?: string;

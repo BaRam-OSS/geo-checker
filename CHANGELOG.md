@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] — 2026-09-04
+
+Indexability first. Every check in this tool scores whatever HTML came back — but nothing verified that the HTML was the real page, or that the page was allowed to be indexed at all. A page declaring `noindex` could score 95.
+
+### Added
+
+- **3 new rules** (registry grows from 34 → 37), all in `crawler`:
+  - `crawler.http-status` (weight 5) — asserts a successful status and flags bot-challenge pages served as 200. A 403/429 means AI crawlers hit the same wall, and every other check below ran against an error page.
+  - `crawler.meta-robots` (weight 5) — page-level `<meta name="robots">`, including per-bot variants (`googlebot`, …). Catches `noindex`, `noai`/`noimageai`, `nosnippet`.
+  - `crawler.x-robots-tag` (weight 4) — the same directives delivered as an HTTP header, invisible in the HTML and independent of robots.txt. `ctx.headers` was collected since 0.1 but no rule ever read it.
+
+### Fixed
+
+- **`report.version` now reports the real package version.** It was hard-coded to `'0.3.0'` in `engine.ts` and never bumped, so every report produced by 0.3.1 and 0.3.2 claimed to be 0.3.0. Stored reports could not be attributed to a ruleset.
+- **User-Agent no longer claims `geo-checker/0.1.0`.** It is derived from `package.json`, so target-site logs show which version actually visited.
+
+### Note on score comparability
+
+Scores from 0.4.0 are **not directly comparable** to earlier versions. The three new rules pass on any correctly-served page, so a well-configured site gains a few points, while a site that blocks indexing now loses a large share of the `crawler` category. Category weights are unchanged from 0.3.2.
+
+## [0.3.2] — 2026-08
+
+### Added
+
+- **`aeo` category** (weight 20) with 3 rules: `aeo.skill-md`, `aeo.agent-permissions`, `aeo.token-length`. `AuditContext` gains `skillMd` and `agentPermissions`; `buildContext` fetches two more root files.
+
+### Changed
+
+- `CATEGORY_WEIGHTS` rebalanced to make room for `aeo`: crawler 25→20, structured-data 30→25, citation 25→20, content 20→15. **0.3.2 scores are not comparable to 0.3.1 scores for the same site**, even ignoring the new rules.
+
+## [0.3.1] — 2026-05
+
+### Added
+
+- **Korean localisation.** `title_ko` on every `Rule`, `rationale_ko` on every `RuleResult` / `RuleResultEntry`, populated on all return paths of all 31 rules. No new rules and no scoring change. Reports stored before this version have no `_ko` fields and fall back to English.
+
 ## [0.3.0] — 2026-04-23
 
 v0.3 is the **"GEO Intelligence"** milestone: deeper coverage of the signals AI engines actually rank on, plus the workflow integrations needed to plug geo-checker into CI. Backwards-compatible — `schemaVersion` stays at `1`, every existing stableId is unchanged, all new fields are optional.

@@ -117,8 +117,23 @@ describe('full rule registry', () => {
   it('scores a barebones page lowly', async () => {
     const html = `<html><body><div>hi</div></body></html>`;
     const report = await runRules(makeCtx({ html, finalUrl: 'http://example.com' }), defaultRules);
-    expect(report.overall).toBeLessThanOrEqual(25);
+    // 0.4.0 에서 상한이 25 → 35 로 올랐다. 신설된 http-status / meta-robots /
+    // x-robots-tag 는 "색인을 막고 있지 않다"를 확인하는 규칙이라, 아무것도 없는
+    // 페이지도 이 셋은 통과한다. 점수 절대값이 이전 버전과 비교되지 않는다는 뜻이라
+    // CHANGELOG 에 명시했다.
+    expect(report.overall).toBeLessThanOrEqual(35);
     expect(report.categories['structured-data'].score).toBe(0);
+  });
+
+  it('색인을 막는 페이지는 크롤러 점수가 무너진다', async () => {
+    // 0.4.0 이전에는 이런 페이지도 다른 항목만 갖추면 높은 점수를 받을 수 있었다.
+    const html = `<html><head><meta name="robots" content="noindex"></head><body><div>hi</div></body></html>`;
+    const blocked = await runRules(
+      makeCtx({ html, headers: { 'x-robots-tag': 'noindex' }, status: 403 }),
+      defaultRules,
+    );
+    const normal = await runRules(makeCtx({ html: `<html><body><div>hi</div></body></html>` }), defaultRules);
+    expect(blocked.categories.crawler.score).toBeLessThan(normal.categories.crawler.score);
   });
 
   it('same input is deterministic', async () => {

@@ -157,6 +157,12 @@ export interface GeoConfig {
 export interface AuditOptions {
   render?: boolean;
   timeoutMs?: number;
+  /**
+   * Refuse to fetch anything that is not on the public internet — the page, every redirect hop, robots.txt,
+   * llms.txt and the sitemap. Turn this on when auditing URLs submitted by untrusted users (SSRF protection).
+   * Cannot be combined with `render`.
+   */
+  publicOnly?: boolean;
   userAgent?: string;
   extraRules?: Rule[];
   only?: string[];

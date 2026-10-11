@@ -136,6 +136,16 @@ console.log(report.timing);                        // { fetchMs, auditMs, totalM
 console.log(report.meta);                          // { toolVersion, nodeVersion, ... }
 ```
 
+### Auditing URLs submitted by other people
+
+If you run geo-checker as a service, the URL is attacker-controlled — and so is every redirect and the `Sitemap:` line in `robots.txt`. Pass `publicOnly` so nothing but the public internet can be reached:
+
+```ts
+const report = await audit(userSuppliedUrl, { publicOnly: true });
+```
+
+Loopback, private, link-local and cloud-metadata addresses are refused on every hop and again at connect time (so a DNS answer that changes between check and use does not help). It throws `BlockedAddressError`. It cannot be combined with `render`.
+
 ### Render an HTML or JSON report directly
 
 ```ts

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.1] — 2026-10-11
+
+### Security
+
+- **`publicOnly` option (SSRF protection for hosted use).** `audit(url, { publicOnly: true })` refuses to fetch anything that is not on the public internet: the page itself, every redirect hop, `robots.txt`, `llms.txt`, and the sitemap named in `robots.txt`. Previously a service auditing user-submitted URLs could only validate the first URL; the target could answer the pre-check normally and then `302` the audit to `http://127.0.0.1/` or a cloud metadata address, and the fetched content would end up in the report. The check now happens where the connection is made — IP-literal hosts and non-http schemes are rejected per hop, and DNS answers pointing at loopback, private, link-local, CGNAT, or IPv4-mapped/NAT64 addresses are refused at connect time, which also closes DNS rebinding. Off by default so the CLI can still audit `localhost` during development. Cannot be combined with `render`.
+
 ## [0.5.0] — 2026-09-05
 
 The `content` category was entirely structural — H1 count, heading order, alt text, word count. The 2026 GEO survey ([arXiv 2607.14035](https://arxiv.org/abs/2607.14035)) classifies pure formatting changes as having **weak effects** ("Test headings, tables, and fields without assuming the direction of effect") while reporting extractable evidence as the strongest content-side lever. This release measures the evidence.

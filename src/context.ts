@@ -10,6 +10,7 @@ export interface BuildContextOptions {
   userAgent?: string;
   timeoutMs?: number;
   render?: boolean;
+  publicOnly?: boolean;
 }
 
 function extractJsonLd($: CheerioAPI): unknown[] {
@@ -44,6 +45,8 @@ export async function buildContext(url: string, opts: BuildContextOptions = {}):
   let renderMode: 'static' | 'rendered';
 
   if (opts.render) {
+    // A headless browser follows redirects and loads subresources on its own; there is no hook to hold it to public addresses.
+    if (opts.publicOnly) throw new Error('publicOnly cannot be combined with render: a headless browser cannot be restricted to public addresses.');
     const page = await fetchRendered(url, opts);
     finalUrl = page.finalUrl;
     html = page.html;

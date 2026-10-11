@@ -14,6 +14,7 @@ export { toSarif } from './reporters/sarif.js';
 export { diffReports, formatDiffLine } from './reporters/diff.js';
 export type { ReportDiff, RuleDelta, CategoryDelta } from './reporters/diff.js';
 export { loadConfig, findConfig, applyConfig } from './config.js';
+export { BlockedAddressError, isBlockedAddress } from './fetcher/network-guard.js';
 export type {
   Status,
   Category,
@@ -48,6 +49,7 @@ export async function audit(url: string, options: AuditOptions = {}): Promise<Au
     ...(options.render ? { render: true } : {}),
     ...(options.userAgent !== undefined ? { userAgent: options.userAgent } : {}),
     ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
+    ...(options.publicOnly ? { publicOnly: true } : {}),
   });
   const fetchMs = Math.round(performance.now() - startedAt);
 

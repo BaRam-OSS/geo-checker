@@ -136,6 +136,16 @@ console.log(report.timing);                        // { fetchMs, auditMs, totalM
 console.log(report.meta);                          // { toolVersion, nodeVersion, ... }
 ```
 
+### 다른 사람이 넣은 주소를 진단할 때
+
+geo-checker 를 서비스로 돌리면 주소는 공격자가 정한다. 리다이렉트와 `robots.txt` 의 `Sitemap:` 줄도 마찬가지다. `publicOnly` 를 켜면 공개 인터넷 밖으로는 나가지 않는다.
+
+```ts
+const report = await audit(userSuppliedUrl, { publicOnly: true });
+```
+
+루프백, 사설, 링크 로컬, 클라우드 메타데이터 주소를 홉마다 거부하고 연결할 때 한 번 더 확인한다(검사와 사용 사이에 DNS 답이 바뀌어도 통하지 않는다). 막히면 `BlockedAddressError` 를 던진다. `render` 와 함께 쓸 수 없다.
+
 ### HTML 또는 JSON 리포트를 직접 렌더링
 
 ```ts

@@ -1,4 +1,5 @@
 import { request } from 'undici';
+import { assertPublicUrl, publicOnlyDispatcher } from './network-guard.js';
 
 // UA 도 0.1.0 으로 굳어 있었다. 대상 사이트 로그에 우리가 어떤 버전으로 다녀갔는지
 // 남아야 문의가 왔을 때 재현할 수 있다.
@@ -18,6 +19,11 @@ export interface StaticFetchOptions {
   timeoutMs?: number;
   maxRedirects?: number;
   accept?: string;
+  /**
+   * Only talk to public internet addresses. Every hop (redirects included) is checked, and DNS answers that
+   * point at loopback/private/link-local addresses are refused at connect time. See `network-guard.ts`.
+   */
+  publicOnly?: boolean;
 }
 
 export interface StaticFetchResult {
@@ -47,7 +53,9 @@ export async function fetchStatic(url: string, opts: StaticFetchOptions = {}): P
   let redirects = 0;
 
   for (;;) {
+    if (opts.publicOnly) assertPublicUrl(current);
     const res = await request(current, {
+      ...(opts.publicOnly ? { dispatcher: publicOnlyDispatcher() } : {}),
       method: 'GET',
       headers: {
         'user-agent': userAgent,

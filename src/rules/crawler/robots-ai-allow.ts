@@ -46,13 +46,16 @@ export const robotsAiAllowRule = defineRule({
   title_ko: 'AI 크롤러 접근 허용 여부',
   description:
     'Major AI search and training crawlers (17 bots incl. GPTBot, OAI-SearchBot, Google-Extended, ClaudeBot, PerplexityBot, Applebot-Extended, Meta-ExternalAgent, Bytespider, DuckAssistBot, YouBot) must be allowed to index the homepage.',
+  // 0.5.2: 이름이 없는 봇은 기본 허용이다(RFC 9309). 명시 여부는 크롤러 동작을 바꾸지 않으므로
+  // 감점하지 않는다 — 실제로 막은 경우만 fail.
   run(ctx) {
     if (!ctx.robots) {
       return {
-        status: 'warn',
-        score: 0.5,
-        rationale: 'robots.txt missing; AI crawlers default to allow, but explicit allow is recommended.',
-        rationale_ko: 'robots.txt가 없습니다. AI 크롤러는 기본적으로 허용되지만, 명시적 허용을 권장합니다.',
+        status: 'pass',
+        score: 1,
+        rationale: 'No robots.txt, so every AI crawler is allowed by default.',
+        rationale_ko: 'robots.txt가 없어 모든 AI 크롤러가 기본으로 접근할 수 있습니다.',
+        evidence: { blocked: [], mentioned: [], totalBots: AI_BOTS.length },
       };
     }
 
@@ -80,10 +83,11 @@ export const robotsAiAllowRule = defineRule({
     }
     if (mentioned.length === 0) {
       return {
-        status: 'warn',
-        score: 0.6,
-        rationale: `All ${AI_BOTS.length} AI crawlers reach the page via default rules, but none are explicitly listed. Consider explicit Allow entries.`,
-        rationale_ko: `${AI_BOTS.length}개 AI 크롤러 모두 기본 규칙으로 접근 가능하지만, 명시적으로 허용된 봇이 없습니다. 명시적 Allow 항목 추가를 권장합니다.`,
+        status: 'pass',
+        score: 1,
+        rationale: `All ${AI_BOTS.length} AI crawlers can reach the page through the default rules.`,
+        rationale_ko: `${AI_BOTS.length}개 AI 크롤러 모두 기본 규칙으로 접근할 수 있습니다.`,
+        evidence: { blocked: [], mentioned, totalBots: AI_BOTS.length },
       };
     }
     return {
@@ -91,7 +95,7 @@ export const robotsAiAllowRule = defineRule({
       score: 1,
       rationale: `All ${AI_BOTS.length} AI crawlers can reach the page; ${mentioned.length} explicitly listed.`,
       rationale_ko: `${AI_BOTS.length}개 AI 크롤러 모두 접근 가능하며, ${mentioned.length}개가 명시적으로 허용되어 있습니다.`,
-      evidence: { mentioned, totalBots: AI_BOTS.length },
+      evidence: { blocked: [], mentioned, totalBots: AI_BOTS.length },
     };
   },
 });

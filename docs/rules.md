@@ -42,8 +42,8 @@ Warns if `/robots.txt` returns a non-2xx status. A reachable file — even an em
 ### crawler.robots-ai-allow
 **weight 5 · impact critical · effort low · diagnostic**
 
-Fails when any of **17 tracked AI crawlers** is disallowed from the audited path. Warns when none are explicitly mentioned. Tracked bots: GPTBot, OAI-SearchBot, ChatGPT-User, Google-Extended, Google-CloudVertexBot, ClaudeBot, anthropic-ai, Claude-Web, PerplexityBot, Applebot-Extended, Meta-ExternalAgent, Bytespider, DuckAssistBot, YouBot, cohere-ai, CCBot, Amazonbot.
-**Fix:** add explicit `User-agent: <bot>` / `Allow: /` blocks (repeat for each bot you care about) instead of relying on the wildcard.
+Fails when any of **17 tracked AI crawlers** is disallowed from the audited path; the score drops by the share of blocked bots. A missing robots.txt or a wildcard-only file passes, because unlisted crawlers are allowed by default (RFC 9309). Tracked bots: GPTBot, OAI-SearchBot, ChatGPT-User, Google-Extended, Google-CloudVertexBot, ClaudeBot, anthropic-ai, Claude-Web, PerplexityBot, Applebot-Extended, Meta-ExternalAgent, Bytespider, DuckAssistBot, YouBot, cohere-ai, CCBot, Amazonbot.
+**Fix:** remove the `Disallow` that matches the blocked user-agent, or add `User-agent: <bot>` / `Allow: /` for it.
 
 ### crawler.llms-txt-present
 **weight 4 · impact medium · effort medium · opportunity**

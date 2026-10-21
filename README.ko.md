@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/BaRam-OSS/geo-checker/main/docs/assets/baram.png" alt="BaRam" width="260" />
+  <a href="https://www.baram.live"><img src="https://raw.githubusercontent.com/BaRam-OSS/geo-checker/main/docs/assets/baram.png" alt="BaRam" width="260" /></a>
 </p>
 
 <h1 align="center">geo-checker</h1>
@@ -16,6 +16,10 @@
 
 <p align="center">
   <b>한국어</b> · <a href="./README.md">English</a>
+</p>
+
+<p align="center">
+  설치 없이 브라우저에서 같은 진단을 해 보세요: <a href="https://www.baram.live/tools/geo-audit"><b>BaRam 무료 GEO 진단</b></a>
 </p>
 
 ---
@@ -267,6 +271,10 @@ jobs:
 ```sh
 geo-checker https://staging.example.com --baseline ./baselines/main.json --out ./geo
 ```
+
+## 만든 곳
+
+`geo-checker`는 [BaRam](https://www.baram.live)의 온페이지 점검을 오픈소스로 공개한 것입니다. BaRam은 ChatGPT, Gemini, Perplexity가 한국어 답변에서 브랜드를 얼마나 언급하고 인용하는지 추적합니다. 일부 룰의 근거 데이터는 리서치로 공개했습니다: [AI 검색 통계 2026](https://www.baram.live/research/ai-search-statistics-2026), [국내 웹사이트 AI 크롤러 정책](https://www.baram.live/research/korea-ai-crawler-policy-2026).
 
 ## 라이선스
 

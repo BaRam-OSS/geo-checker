@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/BaRam-OSS/geo-checker/main/docs/assets/baram.png" alt="BaRam" width="260" />
+  <a href="https://www.baram.live"><img src="https://raw.githubusercontent.com/BaRam-OSS/geo-checker/main/docs/assets/baram.png" alt="BaRam" width="260" /></a>
 </p>
 
 <h1 align="center">geo-checker</h1>
@@ -16,6 +16,10 @@
 
 <p align="center">
   <a href="./README.ko.md">한국어</a> · <b>English</b>
+</p>
+
+<p align="center">
+  No install? Run the same audit in your browser: <a href="https://www.baram.live/tools/geo-audit"><b>BaRam free GEO audit</b></a>
 </p>
 
 ---
@@ -267,6 +271,10 @@ jobs:
 ```sh
 geo-checker https://staging.example.com --baseline ./baselines/main.json --out ./geo
 ```
+
+## Maintained by BaRam
+
+`geo-checker` is the open-source core of the on-page checks behind [BaRam](https://www.baram.live), which tracks how often ChatGPT, Gemini, and Perplexity mention and cite a brand in Korean answers. The data behind some rules is published as research: [AI search statistics 2026](https://www.baram.live/research/ai-search-statistics-2026) and [AI crawler policies of Korean websites](https://www.baram.live/research/korea-ai-crawler-policy-2026).
 
 ## License
 
